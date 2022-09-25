@@ -1,0 +1,12 @@
+.about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+  width: 60vw;
+}
+
+.about p {
+  margin-top: 20px;
+  font-size: 18px;
+}
