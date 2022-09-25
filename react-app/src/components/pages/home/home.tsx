@@ -16,7 +16,7 @@ class Home extends React.Component {
             id="input__search"
             name="search"
             autoComplete="off"
-            placeholder="Search"
+            placeholder="Search by name"
           ></input>
         </div>
         <Cards />

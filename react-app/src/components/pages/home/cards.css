@@ -1,0 +1,25 @@
+.cards {
+	width: 80vw;
+	display: flex;
+	justify-content: center;
+	gap: 60px;
+	flex-wrap: wrap;
+	margin-top: 40px;
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	align-items:center;
+	border: 1px solid rgb(190, 178, 178);
+	border-radius: 8px;
+}
+
+.card p {
+	font-size: 17px;
+}
+
+.card-img>img {
+	width: 270px;
+	border-radius: 7px;
+}
