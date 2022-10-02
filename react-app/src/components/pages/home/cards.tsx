@@ -1,33 +1,36 @@
+import { ApiResult_I } from 'common/interfaces/api.interface';
 import React from 'react';
 import './cards.css';
 import data from './data.json';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-class Cards extends React.Component<any, any> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dataStandart: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(props: any) {
+export interface CardsProps {
+  value: string;
+}
+
+export interface CardsState {
+  dataArr: ApiResult_I[];
+}
+
+class Cards extends React.Component<CardsProps, CardsState> {
+  dataStandard: ApiResult_I[];
+  constructor(props: CardsProps) {
     super(props);
     const dataArr = data.results;
     this.state = { dataArr };
-    this.dataStandart = data.results;
+    this.dataStandard = data.results;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sortingCards(): any[] {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    const filterCards = this.dataStandart.filter((card: any) => {
+  sortingCards(): ApiResult_I[] {
+    const filterCards = this.dataStandard.filter((card: ApiResult_I) => {
       return card.name.toLowerCase().includes(this.props.value.toLowerCase());
     });
     return filterCards;
   }
 
-  createCards() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const arrCards = this.state.dataArr.map((el: any) => {
+  createCards(): JSX.Element[] {
+    const arrCards = this.state.dataArr.map((el: ApiResult_I) => {
       return (
-        <div className="card" key={el.id}>
+        <div role="card" className="card" key={el.id}>
           <div className="card-img">
             <img src={el.image} alt="photo" />
           </div>
@@ -46,11 +49,11 @@ class Cards extends React.Component<any, any> {
         </div>
       );
     });
+
     return arrCards;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  componentDidUpdate(prevProps: Readonly<any>): void {
+  componentDidUpdate(prevProps: { value: string }): void {
     if (this.props.value != prevProps.value) {
       const dataArr = this.sortingCards();
       this.setState({ dataArr });

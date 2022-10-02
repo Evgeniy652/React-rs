@@ -2,7 +2,7 @@ import React from 'react';
 import './footer.css';
 import logo from '../img/logo.png';
 
-const Footer = function () {
+export const Footer = function () {
   return (
     <footer>
       <p>React</p>
