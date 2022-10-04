@@ -1,0 +1,12 @@
+.cards {
+	width: 80vw;
+	display: flex;
+	justify-content: center;
+	gap: 60px;
+	flex-wrap: wrap;
+	margin-top: 40px;
+}
+
+.text-none {
+	font-size: 20px;
+}

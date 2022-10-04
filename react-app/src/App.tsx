@@ -1,11 +1,12 @@
 import React from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
 import './App.css';
-import Header from './components/header/header';
-import Footer from './components/footer/footer';
-import About from './components/pages/about/about';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Page404 from './components/pages/404/404';
-import Home from './components/pages/home/home';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import About from './components/pages/About/About';
+import Page404 from './components/pages/Page404/Page404';
+import Home from './components/pages/Home/Home';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="*" element={<Page404 />} />
           </Routes>

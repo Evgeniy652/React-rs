@@ -2,9 +2,10 @@ import { render, cleanup, fireEvent } from '@testing-library/react';
 import '../../../setupTests';
 
 import React from 'react';
-import Home from './home';
+import Home from './Home';
+import pretty from 'pretty';
 
-jest.mock('./cards', () => () => {
+jest.mock('../../Cards/Cards', () => () => {
   return 'named-awesome-component-mock';
 });
 
@@ -15,7 +16,7 @@ describe('Home component', () => {
     jest.clearAllMocks();
   });
 
-  test('should enter value from localStorage to input', () => {
+  test('should enter value to input from localStorage', () => {
     const component = render(<Home />);
     const input = component.getByRole('input') as HTMLInputElement;
 
@@ -29,5 +30,14 @@ describe('Home component', () => {
     component.unmount();
 
     expect(window.localStorage.setItem).toBeCalledWith('value', 'Rick');
+  });
+
+  test('should render home', () => {
+    const { container } = render(<Home />);
+    expect(pretty(container.innerHTML)).toMatchInlineSnapshot(`
+      "<div class=\\"content\\">
+        <div class=\\"search-block\\"><input role=\\"input\\" type=\\"search\\" id=\\"input__search\\" name=\\"search\\" autocomplete=\\"off\\" placeholder=\\"Search by name\\" value=\\"\\"></div>named-awesome-component-mock
+      </div>"
+    `);
   });
 });

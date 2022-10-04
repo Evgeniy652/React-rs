@@ -5,7 +5,7 @@ import './setupTests';
 
 import App from './App';
 
-jest.mock('./components/pages/home/home', () => () => {
+jest.mock('./components/pages/Home/Home', () => () => {
   return 'home page';
 });
 

@@ -1,8 +1,8 @@
 import { render, cleanup } from '@testing-library/react';
-import '../../../setupTests';
+import '../../setupTests';
 
 import React from 'react';
-import Cards from './cards';
+import Cards from './Cards';
 
 describe('Cards component', () => {
   beforeEach(cleanup);

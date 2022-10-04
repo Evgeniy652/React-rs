@@ -1,18 +1,19 @@
 import React from 'react';
-import Cards from './cards';
-import './home.css';
+import Cards from '../../Cards/Cards';
+import './Home.css';
 
 export interface HomeState {
   value: string;
 }
 
 class Home extends React.Component<Record<string, never>, HomeState> {
-  actualValue;
-
   constructor(props: Record<string, never>) {
     super(props);
-    this.state = { value: '' };
-    this.actualValue = window.localStorage.getItem('value');
+    this.state = { value: window.localStorage.getItem('value') ?? '' };
+  }
+
+  componentWillUnmount(): void {
+    window.localStorage.setItem('value', this.state.value);
   }
 
   render(): React.ReactNode {
@@ -25,28 +26,14 @@ class Home extends React.Component<Record<string, never>, HomeState> {
             id="input__search"
             name="search"
             autoComplete="off"
-            value={this.actualValue}
+            value={this.state.value}
             placeholder="Search by name"
-            onChange={(event) => {
-              const obj = { value: event.target.value };
-              this.actualValue = event.target.value;
-              this.setState(obj);
-            }}
+            onChange={(event) => this.setState({ value: event.target.value })}
           />
         </div>
         <Cards value={this.state.value} />
       </div>
     );
-  }
-
-  componentDidMount(): void {
-    if (this.actualValue) {
-      this.setState({ value: this.actualValue });
-    }
-  }
-
-  componentWillUnmount(): void {
-    window.localStorage.setItem('value', this.actualValue);
   }
 }
 

@@ -3,7 +3,7 @@ import '../../setupTests';
 import pretty from 'pretty';
 
 import React from 'react';
-import Footer from './footer';
+import Footer from './Footer';
 
 describe('Footer component', () => {
   beforeEach(cleanup);
@@ -13,7 +13,7 @@ describe('Footer component', () => {
     expect(pretty(container.innerHTML)).toMatchInlineSnapshot(`
       "<footer>
         <p>React</p>
-        <div><img src="[object Object]" alt="logo"></div>
+        <div><img src=\\"logo.png\\" alt=\\"logo\\"></div>
         <p>© 2022</p>
       </footer>"
     `);

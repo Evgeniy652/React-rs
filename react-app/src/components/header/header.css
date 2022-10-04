@@ -9,6 +9,11 @@ header > h1 {
   letter-spacing: 1.2px;
 }
 
+header .active {
+    color: yellow;
+    text-decoration: underline;
+}
+
 ul {
   display: flex;
   justify-content: center;
@@ -29,5 +34,5 @@ li a {
 }
 
 li a:hover {
-  color: rgb(182, 12, 12);
+    opacity: 0.6;
 }

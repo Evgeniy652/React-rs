@@ -3,7 +3,7 @@ import '../../setupTests';
 import pretty from 'pretty';
 
 import React from 'react';
-import Header from './header';
+import Header from './Header';
 import { MemoryRouter } from 'react-router-dom';
 
 describe('Header component', () => {
@@ -19,8 +19,8 @@ describe('Header component', () => {
       "<header>
         <h1>The Rick and Morty</h1>
         <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
+          <li><a class=\\"\\" href=\\"/home\\">Home</a></li>
+          <li><a class=\\"\\" href=\\"/about\\">About</a></li>
         </ul>
       </header>"
     `);
