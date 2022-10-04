@@ -8,6 +8,7 @@ import Card from './Card';
 
 describe('Card component', () => {
   beforeEach(cleanup);
+
   test('should render card with mock data', () => {
     const user: ApiResult_I = {
       id: 1,

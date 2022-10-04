@@ -9,6 +9,7 @@ export interface HomeState {
 class Home extends React.Component<Record<string, never>, HomeState> {
   constructor(props: Record<string, never>) {
     super(props);
+
     this.state = { value: window.localStorage.getItem('value') ?? '' };
   }
 

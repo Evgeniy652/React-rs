@@ -39,11 +39,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:result": "jest --coverage",
     "eject": "react-scripts eject",
     "lint-init": "eslint --init",
     "lint": "eslint . --ext .tsx",
-    "prepare": "husky install",
+    "prepare": "cd .. && husky install",
     "prettier": "prettier --write ."
   },
   "eslintConfig": {
@@ -66,5 +65,13 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "jest": {
+    "resetMocks": false,
+    "coveragePathIgnorePatterns": [
+        "src/index.tsx",
+        "src/reportWebVitals.ts",
+        "src/common/interfaces/"
+    ]
   }
 }

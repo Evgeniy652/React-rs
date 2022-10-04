@@ -6,6 +6,7 @@ import Cards from './Cards';
 
 describe('Cards component', () => {
   beforeEach(cleanup);
+
   test('should render 20 cards according to data', async () => {
     const component = render(<Cards value="" />);
     const cards = component.queryAllByRole('card');

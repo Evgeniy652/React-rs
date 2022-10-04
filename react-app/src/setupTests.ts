@@ -4,17 +4,21 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+let localStorageValue = '';
+
 const localStorageMock = {
-  getItem: jest.fn(() => {
-    return 'initValue';
-  }),
+  getItem: jest.fn(() => localStorageValue),
   setItem: jest.fn(),
-  clear: jest.fn(),
   removeItem: jest.fn(),
-  key: jest.fn(),
+  getAll: jest.fn(),
+  clear: jest.fn(),
   length: 0,
 };
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
+
+export const setItemToLocalStorage = (value: string) => {
+  localStorageValue = value;
+};
