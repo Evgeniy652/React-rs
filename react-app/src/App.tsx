@@ -7,6 +7,7 @@ import Footer from './components/Footer/Footer';
 import About from './components/pages/About/About';
 import Page404 from './components/pages/Page404/Page404';
 import Home from './components/pages/Home/Home';
+import Form from './components/pages/Form/Form';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/form" element={<Form />} />
             <Route path="*" element={<Page404 />} />
           </Routes>
         </main>

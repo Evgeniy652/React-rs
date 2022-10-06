@@ -13,6 +13,9 @@ const Header = function () {
         <li>
           <NavLink to="/about">About</NavLink>
         </li>
+        <li>
+          <NavLink to="/form">Form</NavLink>
+        </li>
       </ul>
     </header>
   );
