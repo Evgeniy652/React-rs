@@ -6,7 +6,7 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import About from './components/pages/About/About';
 import Page404 from './components/pages/Page404/Page404';
-import Home from './components/pages/Home/Home';
+import Home from './components/pages/home/Home';
 import Form from './components/pages/Form/Form';
 
 function App() {

@@ -32,6 +32,9 @@ class Card extends React.Component<CardProp> {
         <p className="card-gender">
           Gender: <strong>{el.gender}</strong>
         </p>
+        <p className="card-created">
+        created-date: <strong>{el.created}</strong>
+        </p>
       </div>
     );
   }
