@@ -11,7 +11,7 @@ class RequiredErrorMessage extends React.Component<RequiredErrorMessageProp> {
   }
 
   render(): React.ReactNode {
-    return this.props.isError && <div className="error">This is field is required</div>;
+    return this.props.isError && <div className="error">This field is required</div>;
   }
 }
 
