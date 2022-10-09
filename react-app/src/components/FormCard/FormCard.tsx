@@ -1,24 +1,23 @@
-import { ApiResult_I } from 'common/interfaces/api.interface';
+import { FormCard_I } from 'common/interfaces/own-card.interface';
 import React from 'react';
-import './Card.css';
+import './FormCard.css';
 
-export interface OwnCardProps {
-  element: ApiResult_I;
-  role?: string;
+export interface FormCardProps {
+  element: FormCard_I;
 }
 
-class Card extends React.Component<OwnCardProps> {
-  constructor(props: OwnCardProps) {
+class FormCard extends React.Component<FormCardProps> {
+  constructor(props: FormCardProps) {
     super(props);
   }
 
   render(): React.ReactNode {
-    const { element: el, role } = this.props;
+    const { element: el } = this.props;
 
     return (
-      <div role={role} className="card" key={el.id}>
+      <div className="card" key={el.id}>
         <div className="card-img">
-          <img src={el.image} alt="photo" />
+          <img src={URL.createObjectURL(el.file)} alt="photo" />
         </div>
         <p className="card-name">
           Name: <strong>{el.name}</strong>
@@ -27,17 +26,17 @@ class Card extends React.Component<OwnCardProps> {
           Status: <strong>{el.status}</strong>
         </p>
         <p className="card-species">
-          Species: <strong>{el.species}</strong>
+          Species: <strong>{el.species.join(' ')}</strong>
         </p>
         <p className="card-gender">
           Gender: <strong>{el.gender}</strong>
         </p>
         <p className="card-created">
-          Created: <strong>{el.created}</strong>
+          Created: <strong>{el.createdDate}</strong>
         </p>
       </div>
     );
   }
 }
 
-export default Card;
+export default FormCard;

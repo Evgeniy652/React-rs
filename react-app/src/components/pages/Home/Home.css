@@ -1,17 +1,17 @@
 .content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60px;
 }
 
 .search-block {
-	margin-top: 40px;
+  margin-top: 40px;
 }
 
-.search-block>input {
-	background-color: white;
-	height: 24px;
-	border: 2px solid rgb(141, 91, 91);
-	border-radius: 4px;
+.search-block > input {
+  background-color: white;
+  height: 24px;
+  border: 2px solid rgb(141, 91, 91);
+  border-radius: 4px;
 }

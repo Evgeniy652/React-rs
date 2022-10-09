@@ -1,9 +1,8 @@
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import React from 'react';
-import Home from './Home';
-
 import '../../../setupTests';
 import { setItemToLocalStorage } from '../../../setupTests';
+import Home from './Home';
 
 jest.mock('../../Cards/Cards', () => () => {
   return 'named-awesome-component-mock';
