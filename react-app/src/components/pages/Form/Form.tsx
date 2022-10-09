@@ -532,8 +532,10 @@ class Form extends React.Component<Record<string, never>, FormState> {
         </div>
         {/* INFO: Блок созданных карточек */}
         <div className="block-cards">
-          Created Cards:
-          <FormCardList list={this.state.cardList}></FormCardList>
+          <p>Created Cards:</p>
+          <div className="made-cards">
+            <FormCardList list={this.state.cardList}></FormCardList>
+          </div>
         </div>
         {/* INFO: Сообщение если карта создана */}
         {this.state.showSuccessMessage && <div className="success-message">Card was created</div>}

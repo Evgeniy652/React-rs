@@ -48,26 +48,44 @@ select {
 }
 
 section {
-    width: 100%;
-    padding: 5px 10px;
+  width: 100%;
+  padding: 5px 10px;
 }
 
 .img-file {
-    width: 300px;
+  width: 300px;
 }
 
 .block-cards {
-    display: flex;
-    margin-top: 20px;
-    border: 1px solid black;
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px 0;
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+
+.made-cards {
+  margin: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
 }
 
 .success-message {
-    background-color: #174f01;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    width: 200px;
-    height: 100px;
+  background-color: #61db31;
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  position: absolute;
+	z-index: 10;
+	transform: translate(-50%, -50%);
+	left: 50%;
+	top: 80%;
+	border-radius: 5px;
+  text-align: center;
+  font-size: 25px;
+  padding-top: 40px;
 }
