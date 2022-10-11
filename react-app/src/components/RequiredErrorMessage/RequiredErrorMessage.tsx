@@ -1,12 +1,12 @@
 import React from 'react';
 import './RequiredErrorMessage.css';
 
-export interface RequiredErrorMessageProp {
+export interface RequiredErrorMessageProps {
   isError: boolean;
 }
 
-class RequiredErrorMessage extends React.Component<RequiredErrorMessageProp> {
-  constructor(props: RequiredErrorMessageProp) {
+class RequiredErrorMessage extends React.Component<RequiredErrorMessageProps> {
+  constructor(props: RequiredErrorMessageProps) {
     super(props);
   }
 

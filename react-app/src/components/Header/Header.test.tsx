@@ -21,6 +21,7 @@ describe('Header component', () => {
         <ul>
           <li><a class=\\"\\" href=\\"/home\\">Home</a></li>
           <li><a class=\\"\\" href=\\"/about\\">About</a></li>
+          <li><a class=\\"\\" href=\\"/form\\">Form</a></li>
         </ul>
       </header>"
     `);

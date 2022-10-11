@@ -16,7 +16,7 @@ class FormCardList extends React.Component<FormCardListProps> {
     const { list } = this.props;
 
     const renderList = list.map((c) => {
-      return <FormCard key={c.id} element={c}></FormCard>;
+      return <FormCard role='form-card' key={c.id} element={c}></FormCard>;
     });
 
     return renderList;

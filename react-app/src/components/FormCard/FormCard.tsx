@@ -4,6 +4,7 @@ import './FormCard.css';
 
 export interface FormCardProps {
   element: FormCard_I;
+  role: string;
 }
 
 class FormCard extends React.Component<FormCardProps> {
@@ -12,12 +13,12 @@ class FormCard extends React.Component<FormCardProps> {
   }
 
   render(): React.ReactNode {
-    const { element: el } = this.props;
+    const { element: el, role } = this.props;
 
     return (
-      <div className="card" key={el.id}>
+      <div role={role} className="card" key={el.id}>
         <div className="card-img">
-          <img src={URL.createObjectURL(el.file)} alt="photo" />
+          <img src={el.file && URL.createObjectURL(el.file)} alt="photo" />
         </div>
         <p className="card-name">
           Name: <strong>{el.name}</strong>
