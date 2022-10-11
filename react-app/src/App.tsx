@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import './App.css';
 import Header from './components/Header/Header';
@@ -11,7 +11,7 @@ import Form from './components/pages/Form/Form';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="App">
         <Header />
         <main>
@@ -25,7 +25,7 @@ function App() {
         </main>
         <Footer />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
