@@ -408,7 +408,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
               <div className="control">
                 <span className="span-item">Name: </span>
                 <input
-				  role='text-control'
+                  role="text-control"
                   value={name.value}
                   onChange={this.formControls.name.onChange.bind(this)}
                   type="text"
@@ -422,7 +422,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
               <div className="control">
                 <span className="span-item">Date: </span>
                 <input
-				  role='date-control'
+                  role="date-control"
                   value={createdDate.value}
                   onChange={this.formControls.createdDate.onChange.bind(this)}
                   type="date"
@@ -436,7 +436,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
               <div className="control">
                 <span className="span-item">Status: </span>
                 <select
-				  role='select-control'
+                  role="select-control"
                   value={status.value}
                   onChange={this.formControls.status.onChange.bind(this)}
                   name="status"
@@ -454,7 +454,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
                 <span className="span-item">Species: </span>
                 <label>
                   <input
-				    role='horrid-control'
+                    role="horrid-control"
                     name="horridSpace"
                     checked={horrid.checked}
                     onChange={this.formControls.speciesGroup.horrid.onChange.bind(this)}
@@ -465,7 +465,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
                 </label>
                 <label>
                   <input
-				    role='lovely-control'
+                    role="lovely-control"
                     name="lovelySpace"
                     checked={lovely.checked}
                     onChange={this.formControls.speciesGroup.lovely.onChange.bind(this)}
@@ -476,7 +476,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
                 </label>
                 <label>
                   <input
-				    role='unusual-control'
+                    role="unusual-control"
                     name="unusualSpace"
                     checked={unusual.checked}
                     onChange={this.formControls.speciesGroup.unusual.onChange.bind(this)}
@@ -493,7 +493,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
                 <span className="span-item">Gender: </span>
                 <label>
                   <input
-				    role='male-control'
+                    role="male-control"
                     name="gender"
                     type="radio"
                     value={male.value}
@@ -504,7 +504,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
                 </label>
                 <label>
                   <input
-				    role='female-control'
+                    role="female-control"
                     name="gender"
                     type="radio"
                     value={female.value}
@@ -520,7 +520,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
               <div className="control">
                 <span className="span-item">Add picture: </span>
                 <input
-				  role='file-control'
+                  role="file-control"
                   onChange={this.formControls.file.onChange.bind(this)}
                   type="file"
                   name="img"
@@ -532,7 +532,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
               <RequiredErrorMessage isError={file.error.required} />
             </section>
             <input
-			  role='submit-control'
+              role="submit-control"
               className="input-submit"
               disabled={!this.state.isValidateForm || this.state.isVirginForm}
               type="submit"

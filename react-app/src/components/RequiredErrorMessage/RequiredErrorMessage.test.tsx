@@ -8,14 +8,14 @@ describe('RequiredErrorMessage', () => {
   beforeEach(cleanup);
 
   test('should show error message', () => {
-    const component = render(<RequiredErrorMessage isError={true}/>);
+    const component = render(<RequiredErrorMessage isError={true} />);
 
-	expect(component.queryByText('This field is required')).toBeVisible();
+    expect(component.queryByText('This field is required')).toBeVisible();
   });
 
   test('should not show error message', () => {
-    const component = render(<RequiredErrorMessage isError={false}/>);
+    const component = render(<RequiredErrorMessage isError={false} />);
 
-	expect(component.queryByText('This field is required')).toBe(null);
+    expect(component.queryByText('This field is required')).toBe(null);
   });
 });
