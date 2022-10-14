@@ -1,10 +1,12 @@
-export interface Api_I {
-  info: {
-    count: number;
-    pages: number;
-    next: string;
-    prev: number;
-  };
+export interface ApiInfo_I {
+  count: number;
+  pages: number;
+  next: string;
+  prev: number;
+}
+
+export interface ApiData_I {
+  info: ApiInfo_I;
   results: ApiResult_I[];
 }
 

@@ -3,37 +3,23 @@ import Card from '../Card/Card';
 import React from 'react';
 import './Cards.css';
 
-import data from '../../assets/data.json';
-
 export interface CardsProps {
-  value: string;
-}
-
-export interface CardsState {
   dataArr: ApiResult_I[];
 }
 
-class Cards extends React.Component<CardsProps, CardsState> {
+class Cards extends React.Component<CardsProps> {
   constructor(props: CardsProps) {
     super(props);
-
-    this.state = { dataArr: this.sortingData() };
   }
 
-  private sortingData(): ApiResult_I[] {
-    return data.results.filter((card: ApiResult_I) => {
-      return card.name.toLowerCase().includes(this.props.value.toLowerCase());
-    });
-  }
-
-  private createCards(data: ApiResult_I[]): JSX.Element[] {
-    return data.map((el: ApiResult_I) => {
+  private createCards(): JSX.Element[] {
+    return this.props.dataArr.map((el: ApiResult_I) => {
       return <Card key={el.id} role="card" element={el} />;
     });
   }
 
   render(): React.ReactNode {
-    const jsxCards = this.createCards(this.sortingData());
+    const jsxCards = this.createCards();
 
     if (!jsxCards.length) {
       return <p className="text-none">No matches were found for your search</p>;
