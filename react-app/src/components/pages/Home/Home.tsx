@@ -3,6 +3,7 @@ import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interfa
 import CardDetails from 'components/CardDetails/CardDetails';
 import Cards from 'components/Cards/Cards';
 import Modal from 'components/Modal/Modal';
+import Spinner from 'components/Spinner/Spinner';
 import React from 'react';
 import './Home.css';
 
@@ -13,6 +14,8 @@ export interface HomeState {
   info: ApiInfo_I;
   showModal: boolean;
   selectedCard: ApiResult_I;
+  dataIsLoading: boolean;
+  showErrorMessage: boolean;
 }
 
 class Home extends React.Component<Record<string, never>, HomeState> {
@@ -33,6 +36,8 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       currentPage: 0,
       showModal: false,
       selectedCard: null,
+      dataIsLoading: false,
+      showErrorMessage: false,
     };
   }
 
@@ -47,8 +52,6 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       url.searchParams.append('page', String(pageNumber));
     }
 
-    console.log(url);
-
     try {
       const response = await fetch(url, { method: 'GET' });
 
@@ -62,6 +65,8 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       const apiData = await response.json();
       return apiData;
     } catch (err) {
+      this.setState((state) => ({ ...state, showErrorMessage: true }));
+      setTimeout(() => this.setState((state) => ({ ...state, showErrorMessage: false })), 3000);
       throw new Error('Could not get data from API');
     }
   }
@@ -72,6 +77,11 @@ class Home extends React.Component<Record<string, never>, HomeState> {
   async submitForm(event: React.ChangeEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
+    this.setState((state) => ({
+      ...state,
+      dataIsLoading: true,
+    }));
+
     const data = await this.getData(this.state.value, 1);
 
     this.setState((state) => {
@@ -80,6 +90,7 @@ class Home extends React.Component<Record<string, never>, HomeState> {
         currentPage: 1,
         cards: data.results,
         info: data.info,
+        dataIsLoading: false,
       };
 
       return newState;
@@ -112,16 +123,32 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       currentPage += 1;
     }
 
+    this.setState((state) => ({
+      ...state,
+      dataIsLoading: true,
+    }));
+
     const data = await this.getData(this.state.value, currentPage);
 
     this.setState((state) => {
-      const newState: HomeState = { ...state, currentPage, cards: data.results, info: data.info };
+      const newState: HomeState = {
+        ...state,
+        currentPage,
+        cards: data.results,
+        info: data.info,
+        dataIsLoading: false,
+      };
 
       return newState;
     });
   }
 
   async componentDidMount(): Promise<void> {
+    this.setState((state) => ({
+      ...state,
+      dataIsLoading: true,
+    }));
+
     const data = await this.getData(this.state.value, 1);
 
     this.setState((state) => {
@@ -130,6 +157,7 @@ class Home extends React.Component<Record<string, never>, HomeState> {
         cards: data.results,
         info: data.info,
         currentPage: 1,
+        dataIsLoading: false,
       };
 
       return newState;
@@ -170,6 +198,18 @@ class Home extends React.Component<Record<string, never>, HomeState> {
     });
   }
 
+  renderModal(): React.ReactNode {
+    if (!this.state.showModal) {
+      return;
+    }
+
+    return (
+      <Modal>
+        <CardDetails element={this.state.selectedCard}></CardDetails>
+      </Modal>
+    );
+  }
+
   renderPaginator(): React.ReactNode {
     if (!this.state.cards.length) {
       return;
@@ -186,9 +226,14 @@ class Home extends React.Component<Record<string, never>, HomeState> {
     );
   }
 
-  render(): React.ReactNode {
+  renderContent(): React.ReactNode {
+    // INFO: управление спигером
+    if (this.state.dataIsLoading) {
+      return <Spinner />;
+    }
+
     return (
-      <div onClick={this.handleGlobalClick.bind(this)} className="content">
+      <div className="cards-block">
         <div className="search-block">
           <form onSubmit={this.submitForm.bind(this)}>
             <input
@@ -204,14 +249,20 @@ class Home extends React.Component<Record<string, never>, HomeState> {
             <button type="submit">Search</button>
           </form>
         </div>
-        <div className="cards-block">
-          <Cards dataArr={this.state.cards} onCardClick={(card) => this.openModal(card)} />
-          {this.renderPaginator()}
-        </div>
-        {this.state.showModal && (
-          <Modal>
-            <CardDetails element={this.state.selectedCard}></CardDetails>
-          </Modal>
+        <Cards dataArr={this.state.cards} onCardClick={(card) => this.openModal(card)} />
+        {this.renderPaginator()}
+      </div>
+    );
+  }
+
+  render(): React.ReactNode {
+    return (
+      <div onClick={this.handleGlobalClick.bind(this)} className="content">
+        {this.renderContent()}
+        {this.renderModal()}
+        {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
+        {this.state.showErrorMessage && (
+          <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
         )}
       </div>
     );

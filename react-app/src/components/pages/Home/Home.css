@@ -16,4 +16,21 @@
   border-radius: 4px;
 }
 
+.left, .right {
+    cursor: pointer;
+}
   
+.error-message {
+    background-color: #9d3a16;
+    width: 200px;
+    position: fixed;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    top: 80%;
+    right: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    padding: 5px;
+    color: #fff;
+  }
