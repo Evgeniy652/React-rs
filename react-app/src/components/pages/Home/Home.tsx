@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interface';
+import CardDetails from 'components/CardDetails/CardDetails';
 import Cards from 'components/Cards/Cards';
+import Modal from 'components/Modal/Modal';
 import React from 'react';
 import './Home.css';
 
@@ -9,6 +11,8 @@ export interface HomeState {
   currentPage: number;
   cards: ApiResult_I[];
   info: ApiInfo_I;
+  showModal: boolean;
+  selectedCard: ApiResult_I;
 }
 
 class Home extends React.Component<Record<string, never>, HomeState> {
@@ -27,6 +31,8 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       },
       value: window.localStorage.getItem('value') ?? '',
       currentPage: 0,
+      showModal: false,
+      selectedCard: null,
     };
   }
 
@@ -134,9 +140,55 @@ class Home extends React.Component<Record<string, never>, HomeState> {
     window.localStorage.setItem('value', this.state.value);
   }
 
+  openModal(card: ApiResult_I) {
+    if (this.state.showModal) {
+      return;
+    }
+
+    this.setState((state) => {
+      const newState: HomeState = { ...state, showModal: true, selectedCard: card };
+
+      return newState;
+    });
+  }
+
+  handleGlobalClick(event: React.MouseEvent<HTMLElement>): void {
+    if (!this.state.showModal) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+
+    if (target.closest('.card-details') && target.className !== 'cross') {
+      return;
+    }
+
+    this.setState((state) => {
+      const newState: HomeState = { ...state, showModal: false, selectedCard: null };
+
+      return newState;
+    });
+  }
+
+  renderPaginator(): React.ReactNode {
+    if (!this.state.cards.length) {
+      return;
+    }
+
+    return (
+      <div className="paginator" onClick={this.onNumberPageClick.bind(this)}>
+        <div className="left">👈</div>
+        <div>
+          {this.state.currentPage} of {this.state.info.pages}
+        </div>
+        <div className="right">👉</div>
+      </div>
+    );
+  }
+
   render(): React.ReactNode {
     return (
-      <div className="content">
+      <div onClick={this.handleGlobalClick.bind(this)} className="content">
         <div className="search-block">
           <form onSubmit={this.submitForm.bind(this)}>
             <input
@@ -153,15 +205,14 @@ class Home extends React.Component<Record<string, never>, HomeState> {
           </form>
         </div>
         <div className="cards-block">
-          <Cards dataArr={this.state.cards} />
-          <div className="paginator" onClick={this.onNumberPageClick.bind(this)}>
-            <div className="left">👈</div>
-            <div>
-              {this.state.currentPage} of {this.state.info.pages}
-            </div>
-            <div className="right">👉</div>
-          </div>
+          <Cards dataArr={this.state.cards} onCardClick={(card) => this.openModal(card)} />
+          {this.renderPaginator()}
         </div>
+        {this.state.showModal && (
+          <Modal>
+            <CardDetails element={this.state.selectedCard}></CardDetails>
+          </Modal>
+        )}
       </div>
     );
   }

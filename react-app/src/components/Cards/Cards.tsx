@@ -5,6 +5,7 @@ import './Cards.css';
 
 export interface CardsProps {
   dataArr: ApiResult_I[];
+  onCardClick: (card: ApiResult_I) => void;
 }
 
 class Cards extends React.Component<CardsProps> {
@@ -14,7 +15,11 @@ class Cards extends React.Component<CardsProps> {
 
   private createCards(): JSX.Element[] {
     return this.props.dataArr.map((el: ApiResult_I) => {
-      return <Card key={el.id} role="card" element={el} />;
+      return (
+        <div key={el.id} onClick={this.props.onCardClick.bind(this, el)}>
+          <Card role="card" element={el} />
+        </div>
+      );
     });
   }
 

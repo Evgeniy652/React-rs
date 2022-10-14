@@ -2,13 +2,13 @@ import { ApiResult_I } from 'common/interfaces/api.interface';
 import React from 'react';
 import './Card.css';
 
-export interface OwnCardProps {
+export interface CardProps {
   element: ApiResult_I;
   role?: string;
 }
 
-class Card extends React.Component<OwnCardProps> {
-  constructor(props: OwnCardProps) {
+class Card extends React.Component<CardProps> {
+  constructor(props: CardProps) {
     super(props);
   }
 
@@ -22,18 +22,6 @@ class Card extends React.Component<OwnCardProps> {
         </div>
         <p className="card-name">
           Name: <strong>{el.name}</strong>
-        </p>
-        <p className="card-status">
-          Status: <strong>{el.status}</strong>
-        </p>
-        <p className="card-species">
-          Species: <strong>{el.species}</strong>
-        </p>
-        <p className="card-gender">
-          Gender: <strong>{el.gender}</strong>
-        </p>
-        <p className="card-created">
-          Created: <strong>{el.created}</strong>
         </p>
       </div>
     );

@@ -1,0 +1,37 @@
+.modal-card-details {
+  background-color: rgba(0,0,0,0.5);
+  height: 100%;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-details {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px;
+    height: 450px;
+}
+  
+.card p {
+  font-size: 17px;
+}
+
+.card-img > img {
+  width: 270px;
+  border-radius: 7px;
+}
+
+.cross {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
