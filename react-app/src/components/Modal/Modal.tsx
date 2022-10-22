@@ -3,22 +3,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './Modal.css';
 
-const modalRoot = document.getElementById('modal-root');
-
 class Modal extends React.Component<any> {
   divElement: HTMLDivElement;
+  modalRoot: HTMLElement;
 
   constructor(props: any) {
     super(props);
+    this.modalRoot = document.getElementById('modal-root');
     this.divElement = document.createElement('div');
   }
 
   componentDidMount() {
-    modalRoot.appendChild(this.divElement);
+    this.modalRoot.appendChild(this.divElement);
   }
 
   componentWillUnmount() {
-    modalRoot.removeChild(this.divElement);
+    this.modalRoot.removeChild(this.divElement);
   }
 
   render() {

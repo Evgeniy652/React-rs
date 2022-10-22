@@ -227,7 +227,7 @@ class Home extends React.Component<Record<string, never>, HomeState> {
   }
 
   renderContent(): React.ReactNode {
-    // INFO: управление спигером
+    // INFO: управление спинером
     if (this.state.dataIsLoading) {
       return <Spinner />;
     }

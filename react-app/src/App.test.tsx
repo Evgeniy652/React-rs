@@ -27,7 +27,8 @@ describe('App component', () => {
   });
 
   test('should navigate to 404 if unknown path', () => {
-    window.history.pushState({}, 'Test page', 'bla-bla-bla');
+    const hash = '#/';
+    window.history.pushState({}, 'Test page', hash + 'bla-bla-bla');
 
     const component = render(<App />);
     expect(component.getByText('Error 404')).toBeVisible();
