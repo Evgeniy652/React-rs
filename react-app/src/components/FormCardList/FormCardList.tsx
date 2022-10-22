@@ -19,7 +19,7 @@ class FormCardList extends React.Component<FormCardListProps> {
       return <FormCard role="form-card" key={c.id} element={c}></FormCard>;
     });
 
-    return renderList;
+    return <>{renderList}</>;
   }
 }
 

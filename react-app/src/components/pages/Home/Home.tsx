@@ -4,11 +4,10 @@ import CardDetails from 'components/CardDetails/CardDetails';
 import Cards from 'components/Cards/Cards';
 import Modal from 'components/Modal/Modal';
 import Spinner from 'components/Spinner/Spinner';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Home.css';
 
 export interface HomeState {
-  value: string;
   currentPage: number;
   cards: ApiResult_I[];
   info: ApiInfo_I;
@@ -18,31 +17,61 @@ export interface HomeState {
   showErrorMessage: boolean;
 }
 
-class Home extends React.Component<Record<string, never>, HomeState> {
-  private apiDomain = 'https://rickandmortyapi.com/api';
+const Home = () => {
+  const apiDomain = 'https://rickandmortyapi.com/api';
 
-  constructor(props: Record<string, never>) {
-    super(props);
+  const init = async (): Promise<void> => {
+    setState((state) => ({
+      ...state,
+      dataIsLoading: true,
+    }));
 
-    this.state = {
-      cards: [],
-      info: {
-        count: null,
-        next: null,
-        pages: null,
-        prev: null,
-      },
-      value: window.localStorage.getItem('value') ?? '',
-      currentPage: 0,
-      showModal: false,
-      selectedCard: null,
-      dataIsLoading: false,
-      showErrorMessage: false,
+    const data = await getData(value, 1);
+
+    setState((state) => {
+      const newState: HomeState = {
+        ...state,
+        cards: data.results,
+        info: data.info,
+        currentPage: 1,
+        dataIsLoading: false,
+      };
+
+      return newState;
+    });
+  };
+
+  const [state, setState] = useState({
+    cards: [],
+    info: {
+      count: null,
+      next: null,
+      pages: null,
+      prev: null,
+    },
+    currentPage: 0,
+    showModal: false,
+    selectedCard: null,
+    dataIsLoading: false,
+    showErrorMessage: false,
+  });
+
+  const [value, setValue] = useState(window.localStorage.getItem('value') ?? '');
+
+  useEffect(() => {
+    console.log('use effect for Home -> mount');
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      window.localStorage.setItem('value', value);
     };
-  }
+  }, [value]);
 
-  private async getData(searchValue?: string, pageNumber?: number): Promise<ApiData_I> {
-    const url = new URL(`${this.apiDomain}/character`);
+  const getData = async (searchValue?: string, pageNumber?: number): Promise<ApiData_I> => {
+    const url = new URL(`${apiDomain}/character`);
 
     if (searchValue) {
       url.searchParams.append('name', searchValue);
@@ -57,7 +86,7 @@ class Home extends React.Component<Record<string, never>, HomeState> {
 
       if (response.status === 404) {
         return {
-          info: this.state.info,
+          info: state.info,
           results: [],
         };
       }
@@ -65,26 +94,26 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       const apiData = await response.json();
       return apiData;
     } catch (err) {
-      this.setState((state) => ({ ...state, showErrorMessage: true }));
-      setTimeout(() => this.setState((state) => ({ ...state, showErrorMessage: false })), 3000);
+      setState((state) => ({ ...state, showErrorMessage: true }));
+      setTimeout(() => setState((state) => ({ ...state, showErrorMessage: false })), 3000);
       throw new Error('Could not get data from API');
     }
-  }
+  };
 
   /**
    * INFO: получаем данные из API при submit
    */
-  async submitForm(event: React.ChangeEvent<HTMLFormElement>): Promise<void> {
+  const submitForm = async (event: React.ChangeEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
-    this.setState((state) => ({
+    setState((state) => ({
       ...state,
       dataIsLoading: true,
     }));
 
-    const data = await this.getData(this.state.value, 1);
+    const data = await getData(value, 1);
 
-    this.setState((state) => {
+    setState((state) => {
       const newState: HomeState = {
         ...state,
         currentPage: 1,
@@ -95,9 +124,9 @@ class Home extends React.Component<Record<string, never>, HomeState> {
 
       return newState;
     });
-  }
+  };
 
-  async onNumberPageClick(event: React.MouseEvent<HTMLDivElement>): Promise<void> {
+  const onNumberPageClick = async (event: React.MouseEvent<HTMLDivElement>): Promise<void> => {
     const target = event.target as HTMLDivElement;
     event.preventDefault();
 
@@ -106,11 +135,11 @@ class Home extends React.Component<Record<string, never>, HomeState> {
     }
 
     const navigationText = target.textContent;
-    let currentPage: number = this.state.currentPage;
+    let currentPage: number = state.currentPage;
 
     if (
       (navigationText === '👈' && currentPage === 1) ||
-      (navigationText === '👉' && currentPage >= this.state.info.pages)
+      (navigationText === '👉' && currentPage >= state.info.pages)
     ) {
       return;
     }
@@ -123,14 +152,14 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       currentPage += 1;
     }
 
-    this.setState((state) => ({
+    setState((state) => ({
       ...state,
       dataIsLoading: true,
     }));
 
-    const data = await this.getData(this.state.value, currentPage);
+    const data = await getData(value, currentPage);
 
-    this.setState((state) => {
+    setState((state) => {
       const newState: HomeState = {
         ...state,
         currentPage,
@@ -141,47 +170,22 @@ class Home extends React.Component<Record<string, never>, HomeState> {
 
       return newState;
     });
-  }
+  };
 
-  async componentDidMount(): Promise<void> {
-    this.setState((state) => ({
-      ...state,
-      dataIsLoading: true,
-    }));
-
-    const data = await this.getData(this.state.value, 1);
-
-    this.setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        cards: data.results,
-        info: data.info,
-        currentPage: 1,
-        dataIsLoading: false,
-      };
-
-      return newState;
-    });
-  }
-
-  componentWillUnmount(): void {
-    window.localStorage.setItem('value', this.state.value);
-  }
-
-  openModal(card: ApiResult_I) {
-    if (this.state.showModal) {
+  const openModal = (card: ApiResult_I) => {
+    if (state.showModal) {
       return;
     }
 
-    this.setState((state) => {
+    setState((state) => {
       const newState: HomeState = { ...state, showModal: true, selectedCard: card };
 
       return newState;
     });
-  }
+  };
 
-  handleGlobalClick(event: React.MouseEvent<HTMLElement>): void {
-    if (!this.state.showModal) {
+  const handleGlobalClick = (event: React.MouseEvent<HTMLElement>): void => {
+    if (!state.showModal) {
       return;
     }
 
@@ -191,82 +195,80 @@ class Home extends React.Component<Record<string, never>, HomeState> {
       return;
     }
 
-    this.setState((state) => {
+    setState((state) => {
       const newState: HomeState = { ...state, showModal: false, selectedCard: null };
 
       return newState;
     });
-  }
+  };
 
-  renderModal(): React.ReactNode {
-    if (!this.state.showModal) {
+  const renderModal = (): React.ReactNode => {
+    if (!state.showModal) {
       return;
     }
 
     return (
       <Modal>
-        <CardDetails element={this.state.selectedCard}></CardDetails>
+        <CardDetails element={state.selectedCard}></CardDetails>
       </Modal>
     );
-  }
+  };
 
-  renderPaginator(): React.ReactNode {
-    if (!this.state.cards.length) {
+  const renderPaginator = (): React.ReactNode => {
+    if (!state.cards.length) {
       return;
     }
 
     return (
-      <div className="paginator" onClick={this.onNumberPageClick.bind(this)}>
+      <div className="paginator" onClick={onNumberPageClick}>
         <div className="left">👈</div>
         <div>
-          {this.state.currentPage} of {this.state.info.pages}
+          {state.currentPage} of {state.info.pages}
         </div>
         <div className="right">👉</div>
       </div>
     );
-  }
+  };
 
-  renderContent(): React.ReactNode {
+  const renderContent = (): React.ReactNode => {
     // INFO: управление спинером
-    if (this.state.dataIsLoading) {
+    if (state.dataIsLoading) {
       return <Spinner />;
     }
 
     return (
       <div className="cards-block">
         <div className="search-block">
-          <form onSubmit={this.submitForm.bind(this)}>
+          <form onSubmit={submitForm}>
             <input
               role="input"
               type="search"
               id="input__search"
               name="search"
               autoComplete="off"
-              value={this.state.value}
+              value={value}
               placeholder="Search by name"
-              onChange={(event) => this.setState({ value: event.target.value })}
+              onChange={(event) => setValue(event.target.value)}
             />
             <button type="submit">Search</button>
           </form>
         </div>
-        <Cards dataArr={this.state.cards} onCardClick={(card) => this.openModal(card)} />
-        {this.renderPaginator()}
+        <Cards dataArr={state.cards} onCardClick={(card) => openModal(card)} />
+        {renderPaginator()}
       </div>
     );
-  }
+  };
 
-  render(): React.ReactNode {
-    return (
-      <div onClick={this.handleGlobalClick.bind(this)} className="content">
-        {this.renderContent()}
-        {this.renderModal()}
-        {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
-        {this.state.showErrorMessage && (
-          <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div onClick={handleGlobalClick} className="content">
+      {renderContent()}
+      {renderModal()}
+      {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
+      {state.showErrorMessage && (
+        <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
+      )}
+    </div>
+  );
+};
 
 export default Home;

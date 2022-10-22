@@ -2,7 +2,7 @@ import { FormCard_I } from '../../../common/interfaces/own-card.interface';
 import FormCardList from '../../FormCardList/FormCardList';
 
 import RequiredErrorMessage from '../../../components/RequiredErrorMessage/RequiredErrorMessage';
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 import './Form.css';
 
 type formFieldType = 'name' | 'createdDate' | 'speciesGroup' | 'status' | 'file' | 'genderGroup';
@@ -48,59 +48,76 @@ export interface FormState {
   isVirginForm: boolean;
 }
 
-class Form extends React.Component<Record<string, never>, FormState> {
-  formRef = React.createRef<HTMLFormElement>();
+const Form = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const requiredValidatorError = (controls: genericControlType): boolean => {
+    const { value } = controls;
+
+    if (!value) {
+      return true;
+    }
+
+    if (value instanceof File) {
+      return false;
+    }
+
+    if (typeof value === 'object') {
+      const arrayOfValues = Object.values(controls.value);
+
+      return !arrayOfValues.some((e: SelectOption_I) => e.checked);
+    }
+
+    return false;
+  };
 
   // INFO: in validators array you can add any validator as you wish :)
-  private formControls = {
+  const formControls = {
     name: {
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        this.onInputChange('name', event.target),
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => onInputChange('name', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     createdDate: {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        this.onInputChange('createdDate', event.target),
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+        onInputChange('createdDate', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     speciesGroup: {
       horrid: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          this.onSpeciesGroupInputChange('horrid', event.target),
+          onSpeciesGroupInputChange('horrid', event.target),
       },
       lovely: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          this.onSpeciesGroupInputChange('lovely', event.target),
+          onSpeciesGroupInputChange('lovely', event.target),
       },
       unusual: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          this.onSpeciesGroupInputChange('unusual', event.target),
+          onSpeciesGroupInputChange('unusual', event.target),
       },
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     status: {
       onChange: (event: React.ChangeEvent<HTMLSelectElement>) =>
-        this.onInputChange('status', event.target),
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+        onInputChange('status', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     genderGroup: {
       male: {
-        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          this.onGenderGroupChange(event.target),
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => onGenderGroupChange(event.target),
       },
       female: {
-        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          this.onGenderGroupChange(event.target),
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => onGenderGroupChange(event.target),
       },
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     file: {
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) => this.onFileChange(event.target),
-      validators: [{ type: 'required', validator: this.requiredValidatorError.bind(this) }],
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => onFileChange(event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
   };
 
-  private cleanForm: Form_I = {
+  const cleanForm: Form_I = {
     name: {
       value: '',
       isInvalid: null,
@@ -155,22 +172,18 @@ class Form extends React.Component<Record<string, never>, FormState> {
     },
   };
 
-  constructor(props: Record<string, never>) {
-    super(props);
+  const [state, setState] = useState({
+    showSuccessMessage: false,
+    cardList: [],
+    form: cleanForm,
+    isValidateForm: true,
+    isVirginForm: true,
+  });
 
-    this.state = {
-      showSuccessMessage: false,
-      cardList: [],
-      form: this.cleanForm,
-      isValidateForm: true,
-      isVirginForm: true,
-    };
-  }
-
-  private onFileChange(target: HTMLInputElement): void {
+  const onFileChange = (target: HTMLInputElement): void => {
     const value = target.files[0];
 
-    this.setState((state: FormState) => {
+    setState((state: FormState) => {
       const newForm: Form_I = {
         ...state.form,
         file: {
@@ -185,12 +198,12 @@ class Form extends React.Component<Record<string, never>, FormState> {
 
       return newState;
     });
-  }
+  };
 
-  private onInputChange(key: string, target: HTMLInputElement | HTMLSelectElement): void {
+  const onInputChange = (key: string, target: HTMLInputElement | HTMLSelectElement): void => {
     const value = target.value;
 
-    this.setState((state: FormState) => {
+    setState((state: FormState) => {
       const newForm: Form_I = {
         ...state.form,
         [key]: {
@@ -205,15 +218,15 @@ class Form extends React.Component<Record<string, never>, FormState> {
 
       return newState;
     });
-  }
+  };
 
-  private onSpeciesGroupInputChange(
+  const onSpeciesGroupInputChange = (
     key: 'horrid' | 'lovely' | 'unusual',
     target: HTMLInputElement
-  ) {
+  ) => {
     const value = target.value;
 
-    this.setState((state: FormState) => {
+    setState((state: FormState) => {
       const newSpeciesGroup: SpeciesGroup_I = {
         ...state.form.speciesGroup.value,
         [key]: {
@@ -232,12 +245,12 @@ class Form extends React.Component<Record<string, never>, FormState> {
 
       return newState;
     });
-  }
+  };
 
-  private onGenderGroupChange(target: HTMLInputElement): void {
+  const onGenderGroupChange = (target: HTMLInputElement): void => {
     const value = target.value;
 
-    this.setState((state: FormState) => {
+    setState((state: FormState) => {
       let valueGender;
 
       if (value === 'Male') {
@@ -278,31 +291,11 @@ class Form extends React.Component<Record<string, never>, FormState> {
 
       return newState;
     });
-  }
+  };
 
-  private requiredValidatorError(controls: genericControlType): boolean {
-    const { value } = controls;
-
-    if (!value) {
-      return true;
-    }
-
-    if (value instanceof File) {
-      return false;
-    }
-
-    if (typeof value === 'object') {
-      const arrayOfValues = Object.values(controls.value);
-
-      return !arrayOfValues.some((e: SelectOption_I) => e.checked);
-    }
-
-    return false;
-  }
-
-  private validateForm(): void {
+  const validateForm = (): void => {
     const validate = (control: genericControlType, key: formFieldType) => {
-      const validators = this.formControls[key].validators;
+      const validators = formControls[key].validators;
 
       const error = validators.reduce((acc, v) => {
         return { ...acc, [v.type]: v.validator(control) };
@@ -310,7 +303,7 @@ class Form extends React.Component<Record<string, never>, FormState> {
 
       const isInvalid = Object.values(error).some((v) => v);
 
-      this.setState((state: FormState) => {
+      setState((state: FormState) => {
         const newControl = {
           ...state.form[key],
           error,
@@ -329,229 +322,221 @@ class Form extends React.Component<Record<string, never>, FormState> {
       });
     };
 
-    const { form } = this.state;
+    const { form } = state;
 
     Object.entries(form).forEach(([key, control]: [string, genericControlType]) => {
       validate(control, key as formFieldType);
     });
-  }
+  };
 
-  onSubmitEmitted(event: FormEvent): void {
-    this.validateForm();
+  const onSubmitEmitted = (event: FormEvent): void => {
+    validateForm();
     event.preventDefault();
 
-    setTimeout(() => {
-      console.log('state after submit', this.state);
+    setState((state) => {
+      console.log('state after submit', state);
 
-      if (!this.state.isValidateForm) {
-        return;
+      if (!state.isValidateForm) {
+        return state;
       }
 
-      this.setState((state) => {
-        const gender = Object.values(state.form.genderGroup.value).find(
-          (e: SelectOption_I) => e.checked
-        ).value;
-        const species = Object.values(state.form.speciesGroup.value)
-          .filter((e: SelectOption_I) => e.checked)
-          .map((e) => e.value);
+      const gender = Object.values(state.form.genderGroup.value).find(
+        (e: SelectOption_I) => e.checked
+      ).value;
+      const species = Object.values(state.form.speciesGroup.value)
+        .filter((e: SelectOption_I) => e.checked)
+        .map((e) => e.value);
 
-        const card: FormCard_I = {
-          id: String(Math.floor(Math.random() * 10000)),
-          name: state.form.name.value,
-          createdDate: state.form.createdDate.value,
-          file: state.form.file.value,
-          gender,
-          species,
-          status: state.form.status.value,
-        };
+      const card: FormCard_I = {
+        id: String(Math.floor(Math.random() * 10000)),
+        name: state.form.name.value,
+        createdDate: state.form.createdDate.value,
+        file: state.form.file.value,
+        gender,
+        species,
+        status: state.form.status.value,
+      };
 
-        const newState = {
-          ...state,
-          cardList: [...state.cardList, card],
-          form: this.cleanForm,
-          isVirginForm: true,
-          isValidateForm: true,
-          showSuccessMessage: true,
-        };
+      const newState = {
+        ...state,
+        cardList: [...state.cardList, card],
+        form: cleanForm,
+        isVirginForm: true,
+        isValidateForm: true,
+        showSuccessMessage: true,
+      };
 
-        return newState;
-      });
+      return newState;
+    });
 
-      this.formRef.current.reset();
+    formRef.current.reset();
 
-      setTimeout(() => {
-        this.setState((state) => ({ ...state, showSuccessMessage: false }));
-      }, 4000);
-    }, 0);
-  }
+    setTimeout(() => {
+      setState((state) => ({ ...state, showSuccessMessage: false }));
+    }, 4000);
+  };
 
-  onFormChange(): void {
-    this.setState({ isVirginForm: false });
-  }
+  const onFormChange = (): void => {
+    setState((state) => ({ ...state, isVirginForm: false }));
+  };
 
-  render(): React.ReactNode {
-    const { name, createdDate, speciesGroup, status, genderGroup, file } = this.state.form;
-    const { horrid, lovely, unusual } = speciesGroup.value;
-    const { male, female } = genderGroup.value;
+  const { name, createdDate, speciesGroup, status, genderGroup, file } = state.form;
+  const { horrid, lovely, unusual } = speciesGroup.value;
+  const { male, female } = genderGroup.value;
 
-    return (
-      <>
-        {/* INFO: Блок формы */}
-        <div className="block-form">
-          <form
-            ref={this.formRef}
-            onSubmit={this.onSubmitEmitted.bind(this)}
-            onChange={this.onFormChange.bind(this)}
-          >
-            <p>Form create card</p>
-            <section>
-              <div className="control">
-                <span className="span-item">Name: </span>
+  return (
+    <>
+      {/* INFO: Блок формы */}
+      <div className="block-form">
+        <form ref={formRef} onSubmit={onSubmitEmitted} onChange={onFormChange}>
+          <p>Form create card</p>
+          <section>
+            <div className="control">
+              <span className="span-item">Name: </span>
+              <input
+                role="text-control"
+                value={name.value}
+                onChange={formControls.name.onChange}
+                type="text"
+                name="name"
+                id="name"
+              />
+            </div>
+            <RequiredErrorMessage isError={name.error.required} />
+          </section>
+          <section>
+            <div className="control">
+              <span className="span-item">Date: </span>
+              <input
+                role="date-control"
+                value={createdDate.value}
+                onChange={formControls.createdDate.onChange}
+                type="date"
+                name="created-date"
+                id="created-date"
+              />
+            </div>
+            <RequiredErrorMessage isError={createdDate.error.required} />
+          </section>
+          <section>
+            <div className="control">
+              <span className="span-item">Status: </span>
+              <select
+                role="select-control"
+                value={status.value}
+                onChange={formControls.status.onChange}
+                name="status"
+                id="select-status"
+              >
+                <option value="alive">Alive</option>
+                <option value="unknown">Unknown</option>
+                <option value="dead">Dead</option>
+              </select>
+            </div>
+            <RequiredErrorMessage isError={status.error.required} />
+          </section>
+          <section>
+            <fieldset className="control">
+              <span className="span-item">Species: </span>
+              <label>
                 <input
-                  role="text-control"
-                  value={name.value}
-                  onChange={this.formControls.name.onChange.bind(this)}
-                  type="text"
-                  name="name"
-                  id="name"
+                  role="horrid-control"
+                  name="horridSpace"
+                  checked={horrid.checked}
+                  onChange={formControls.speciesGroup.horrid.onChange}
+                  type="checkbox"
+                  value={horrid.value}
                 />
-              </div>
-              <RequiredErrorMessage isError={name.error.required} />
-            </section>
-            <section>
-              <div className="control">
-                <span className="span-item">Date: </span>
+                Horrid
+              </label>
+              <label>
                 <input
-                  role="date-control"
-                  value={createdDate.value}
-                  onChange={this.formControls.createdDate.onChange.bind(this)}
-                  type="date"
-                  name="created-date"
-                  id="created-date"
+                  role="lovely-control"
+                  name="lovelySpace"
+                  checked={lovely.checked}
+                  onChange={formControls.speciesGroup.lovely.onChange}
+                  type="checkbox"
+                  value={lovely.value}
                 />
-              </div>
-              <RequiredErrorMessage isError={createdDate.error.required} />
-            </section>
-            <section>
-              <div className="control">
-                <span className="span-item">Status: </span>
-                <select
-                  role="select-control"
-                  value={status.value}
-                  onChange={this.formControls.status.onChange.bind(this)}
-                  name="status"
-                  id="select-status"
-                >
-                  <option value="alive">Alive</option>
-                  <option value="unknown">Unknown</option>
-                  <option value="dead">Dead</option>
-                </select>
-              </div>
-              <RequiredErrorMessage isError={status.error.required} />
-            </section>
-            <section>
-              <fieldset className="control">
-                <span className="span-item">Species: </span>
-                <label>
-                  <input
-                    role="horrid-control"
-                    name="horridSpace"
-                    checked={horrid.checked}
-                    onChange={this.formControls.speciesGroup.horrid.onChange.bind(this)}
-                    type="checkbox"
-                    value={horrid.value}
-                  />
-                  Horrid
-                </label>
-                <label>
-                  <input
-                    role="lovely-control"
-                    name="lovelySpace"
-                    checked={lovely.checked}
-                    onChange={this.formControls.speciesGroup.lovely.onChange.bind(this)}
-                    type="checkbox"
-                    value={lovely.value}
-                  />
-                  Lovely
-                </label>
-                <label>
-                  <input
-                    role="unusual-control"
-                    name="unusualSpace"
-                    checked={unusual.checked}
-                    onChange={this.formControls.speciesGroup.unusual.onChange.bind(this)}
-                    type="checkbox"
-                    value={unusual.value}
-                  />
-                  Unusual
-                </label>
-              </fieldset>
-              <RequiredErrorMessage isError={speciesGroup.error.required} />
-            </section>
-            <section>
-              <fieldset className="control">
-                <span className="span-item">Gender: </span>
-                <label>
-                  <input
-                    role="male-control"
-                    name="gender"
-                    type="radio"
-                    value={male.value}
-                    checked={male.checked}
-                    onChange={this.formControls.genderGroup.male.onChange.bind(this)}
-                  />
-                  Male
-                </label>
-                <label>
-                  <input
-                    role="female-control"
-                    name="gender"
-                    type="radio"
-                    value={female.value}
-                    checked={female.checked}
-                    onChange={this.formControls.genderGroup.female.onChange.bind(this)}
-                  />
-                  Female
-                </label>
-              </fieldset>
-              <RequiredErrorMessage isError={genderGroup.error.required} />
-            </section>
-            <section>
-              <div className="control">
-                <span className="span-item">Add picture: </span>
+                Lovely
+              </label>
+              <label>
                 <input
-                  role="file-control"
-                  onChange={this.formControls.file.onChange.bind(this)}
-                  type="file"
-                  name="img"
-                  accept="image/*"
+                  role="unusual-control"
+                  name="unusualSpace"
+                  checked={unusual.checked}
+                  onChange={formControls.speciesGroup.unusual.onChange}
+                  type="checkbox"
+                  value={unusual.value}
                 />
-                <br />
-                <img className="img-file" src={file.value && URL.createObjectURL(file.value)}></img>
-              </div>
-              <RequiredErrorMessage isError={file.error.required} />
-            </section>
-            <input
-              role="submit-control"
-              className="input-submit"
-              disabled={!this.state.isValidateForm || this.state.isVirginForm}
-              type="submit"
-              value="Submit"
-            />
-          </form>
+                Unusual
+              </label>
+            </fieldset>
+            <RequiredErrorMessage isError={speciesGroup.error.required} />
+          </section>
+          <section>
+            <fieldset className="control">
+              <span className="span-item">Gender: </span>
+              <label>
+                <input
+                  role="male-control"
+                  name="gender"
+                  type="radio"
+                  value={male.value}
+                  checked={male.checked}
+                  onChange={formControls.genderGroup.male.onChange}
+                />
+                Male
+              </label>
+              <label>
+                <input
+                  role="female-control"
+                  name="gender"
+                  type="radio"
+                  value={female.value}
+                  checked={female.checked}
+                  onChange={formControls.genderGroup.female.onChange}
+                />
+                Female
+              </label>
+            </fieldset>
+            <RequiredErrorMessage isError={genderGroup.error.required} />
+          </section>
+          <section>
+            <div className="control">
+              <span className="span-item">Add picture: </span>
+              <input
+                role="file-control"
+                onChange={formControls.file.onChange}
+                type="file"
+                name="img"
+                accept="image/*"
+              />
+              <br />
+              <img className="img-file" src={file.value && URL.createObjectURL(file.value)}></img>
+            </div>
+            <RequiredErrorMessage isError={file.error.required} />
+          </section>
+          <input
+            role="submit-control"
+            className="input-submit"
+            disabled={!state.isValidateForm || state.isVirginForm}
+            type="submit"
+            value="Submit"
+          />
+        </form>
+      </div>
+      {/* INFO: Блок созданных карточек */}
+      <div className="block-cards">
+        <p>Created Cards:</p>
+        <div className="made-cards">
+          <FormCardList list={state.cardList}></FormCardList>
         </div>
-        {/* INFO: Блок созданных карточек */}
-        <div className="block-cards">
-          <p>Created Cards:</p>
-          <div className="made-cards">
-            <FormCardList list={this.state.cardList}></FormCardList>
-          </div>
-        </div>
-        {/* INFO: Сообщение если карта создана */}
-        {this.state.showSuccessMessage && <div className="success-message">Card was created</div>}
-      </>
-    );
-  }
-}
+      </div>
+      {/* INFO: Сообщение если карта создана */}
+      {state.showSuccessMessage && <div className="success-message">Card was created</div>}
+    </>
+  );
+};
 
 export default Form;
