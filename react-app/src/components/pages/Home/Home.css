@@ -58,12 +58,16 @@ button[type=submit] {
     font-size: 16px;
     padding: 5px;
     color: #fff;
-  }
+}
 
-  .paginator {
+.paginator {
     display: flex;
     justify-content: center;
     align-items: center;
     column-gap: 10px;
     margin-top: 50px;
-  }
+}
+
+.select-page-form {
+    border: none;
+}

@@ -1,16 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EntityStatus_E } from 'common/enums/entity-status.enum';
-import { Gender_E } from 'common/enums/gender.enum';
-import { Species_E } from 'common/enums/species.enum';
-import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interface';
-import { HomeForm_I } from 'common/interfaces/home-form.interface';
-import CardDetails from 'components/CardDetails/CardDetails';
-import Cards from 'components/Cards/Cards';
-import Modal from 'components/Modal/Modal';
-import Spinner from 'components/Spinner/Spinner';
-import React, { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import './Home.css';
+import { FormControlContext, FormControlContext_I } from "App";
+import { EntityStatus_E } from "common/enums/entity-status.enum";
+import { Gender_E } from "common/enums/gender.enum";
+import { Species_E } from "common/enums/species.enum";
+import {
+  ApiData_I,
+  ApiInfo_I,
+  ApiResult_I,
+} from "common/interfaces/api.interface";
+import { HomeForm_I } from "common/interfaces/home-form.interface";
+import CardDetails from "components/CardDetails/CardDetails";
+import Cards from "components/Cards/Cards";
+import Modal from "components/Modal/Modal";
+import Spinner from "components/Spinner/Spinner";
+import React, { useContext, useEffect, useState } from "react";
+import { Actions_E } from "state/actions";
+import "./Home.css";
 
 export interface HomeState {
   currentPage: number;
@@ -23,7 +28,7 @@ export interface HomeState {
 }
 
 const Home = () => {
-  const apiDomain = 'https://rickandmortyapi.com/api';
+  const apiDomain = "https://rickandmortyapi.com/api";
 
   const init = async (): Promise<void> => {
     setState((state) => ({
@@ -31,7 +36,7 @@ const Home = () => {
       dataIsLoading: true,
     }));
 
-    const data = await getData(formControls, 1);
+    const data = await getData(searchValue, formControls, 1);
 
     setState((state) => {
       const newState: HomeState = {
@@ -45,6 +50,12 @@ const Home = () => {
       return newState;
     });
   };
+
+  const [searchValue, setSearchValue] = useState(
+    !!window.localStorage.getItem("value")
+      ? window.localStorage.getItem("value")
+      : ""
+  );
 
   const [state, setState] = useState({
     cards: [],
@@ -61,52 +72,52 @@ const Home = () => {
     showErrorMessage: false,
   });
 
-  const [formControls, setFormControls] = useState<HomeForm_I>({
-    searchValue: window.localStorage.getItem('value') ?? '',
-    status: EntityStatus_E.ALL,
-    gender: Gender_E.NONE,
-    species: Species_E.ALL,
-  });
+  const { formControlState: formControls, dispatch } =
+    useContext<FormControlContext_I>(FormControlContext);
 
   useEffect(() => {
-    console.log('use effect for Home -> mount and formControls changes');
+    console.log("use effect for Home -> mount and formControls changes");
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formControls.gender, formControls.species, formControls.status]);
 
   useEffect(() => {
-    console.log('Search has changed');
+    console.log("Search has changed");
 
     return () => {
-      window.localStorage.setItem('value', formControls.searchValue);
+      window.localStorage.setItem("value", searchValue);
     };
-  }, [formControls.searchValue]);
+  }, [searchValue]);
 
-  const getData = async (formControls: HomeForm_I, pageNumber?: number): Promise<ApiData_I> => {
+  const getData = async (
+    searchValue: string,
+    formControls: HomeForm_I,
+    pageNumber?: number
+  ): Promise<ApiData_I> => {
     const url = new URL(`${apiDomain}/character`);
 
-    if (formControls.searchValue) {
-      url.searchParams.append('name', formControls.searchValue);
+    if (searchValue) {
+      url.searchParams.append("name", searchValue);
     }
 
     if (formControls.status && formControls.status !== EntityStatus_E.ALL) {
-      url.searchParams.append('status', formControls.status);
+      url.searchParams.append("status", formControls.status);
     }
 
     if (formControls.gender && formControls.gender !== Gender_E.NONE) {
-      url.searchParams.append('gender', formControls.gender);
+      url.searchParams.append("gender", formControls.gender);
     }
 
     if (formControls.species && formControls.species !== Species_E.ALL) {
-      url.searchParams.append('species', formControls.species);
+      url.searchParams.append("species", formControls.species);
     }
 
     if (pageNumber) {
-      url.searchParams.append('page', String(pageNumber));
+      url.searchParams.append("page", String(pageNumber));
     }
 
     try {
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetch(url, { method: "GET" });
 
       if (response.status === 404) {
         return {
@@ -119,15 +130,20 @@ const Home = () => {
       return apiData;
     } catch (err) {
       setState((state) => ({ ...state, showErrorMessage: true }));
-      setTimeout(() => setState((state) => ({ ...state, showErrorMessage: false })), 3000);
-      throw new Error('Could not get data from API');
+      setTimeout(
+        () => setState((state) => ({ ...state, showErrorMessage: false })),
+        3000
+      );
+      throw new Error("Could not get data from API");
     }
   };
 
   /**
    * INFO: получаем данные из API при submit
    */
-  const submitForm = async (event: React.ChangeEvent<HTMLFormElement>): Promise<void> => {
+  const submitForm = async (
+    event: React.ChangeEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
 
     setState((state) => ({
@@ -135,7 +151,7 @@ const Home = () => {
       dataIsLoading: true,
     }));
 
-    const data = await getData(formControls, 1);
+    const data = await getData(searchValue, formControls, 1);
 
     setState((state) => {
       const newState: HomeState = {
@@ -150,11 +166,13 @@ const Home = () => {
     });
   };
 
-  const onNumberPageClick = async (event: React.MouseEvent<HTMLDivElement>): Promise<void> => {
+  const onNumberPageClick = async (
+    event: React.MouseEvent<HTMLDivElement>
+  ): Promise<void> => {
     const target = event.target as HTMLDivElement;
     event.preventDefault();
 
-    if (target.className.includes('paginator')) {
+    if (target.className.includes("paginator")) {
       return;
     }
 
@@ -162,17 +180,17 @@ const Home = () => {
     let currentPage: number = state.currentPage;
 
     if (
-      (navigationText === '👈' && currentPage === 1) ||
-      (navigationText === '👉' && currentPage >= state.info.pages)
+      (navigationText === "👈" && currentPage === 1) ||
+      (navigationText === "👉" && currentPage >= state.info.pages)
     ) {
       return;
     }
 
-    if (navigationText === '👈') {
+    if (navigationText === "👈") {
       currentPage -= 1;
     }
 
-    if (navigationText === '👉') {
+    if (navigationText === "👉") {
       currentPage += 1;
     }
 
@@ -181,7 +199,7 @@ const Home = () => {
       dataIsLoading: true,
     }));
 
-    const data = await getData(formControls, currentPage);
+    const data = await getData(searchValue, formControls, currentPage);
 
     setState((state) => {
       const newState: HomeState = {
@@ -202,7 +220,11 @@ const Home = () => {
     }
 
     setState((state) => {
-      const newState: HomeState = { ...state, showModal: true, selectedCard: card };
+      const newState: HomeState = {
+        ...state,
+        showModal: true,
+        selectedCard: card,
+      };
 
       return newState;
     });
@@ -215,12 +237,16 @@ const Home = () => {
 
     const target = event.target as HTMLElement;
 
-    if (target.closest('.card-details') && target.className !== 'cross') {
+    if (target.closest(".card-details") && target.className !== "cross") {
       return;
     }
 
     setState((state) => {
-      const newState: HomeState = { ...state, showModal: false, selectedCard: null };
+      const newState: HomeState = {
+        ...state,
+        showModal: false,
+        selectedCard: null,
+      };
 
       return newState;
     });
@@ -266,7 +292,7 @@ const Home = () => {
           </div>
           <div className="right">👉</div>
         </div>
-        <form action="">
+        <form className="select-page-form">
           <div className="control">
             <label htmlFor="status">Choose a page 👇:</label>
             <select
@@ -284,20 +310,27 @@ const Home = () => {
   };
 
   const searchValueOnChange = ($event: any) => {
-    setFormControls((state) => {
-      return { ...state, searchValue: $event.target.value };
-    });
+    setSearchValue($event.target.value);
   };
 
   const statusOnChange = ($event: any) => {
-    setFormControls((state) => {
-      return { ...state, status: $event.target.value };
+    dispatch({
+      type: Actions_E.CHANGE_STATUS_VALUE,
+      value: $event.target.value,
     });
   };
 
   const speciesOnChange = ($event: any) => {
-    setFormControls((state) => {
-      return { ...state, species: $event.target.value };
+    dispatch({
+      type: Actions_E.CHANGE_SPECIES_VALUE,
+      value: $event.target.value,
+    });
+  };
+
+  const genderOnChange = ($event: any) => {
+    dispatch({
+      type: Actions_E.CHANGE_GENDER_VALUE,
+      value: $event.target.value,
     });
   };
 
@@ -306,7 +339,7 @@ const Home = () => {
       return { ...state, dataIsLoading: true };
     });
 
-    const data = await getData(formControls, $event.target.value);
+    const data = await getData(searchValue, formControls, $event.target.value);
 
     setState((state) => {
       const newState: HomeState = {
@@ -318,16 +351,6 @@ const Home = () => {
       };
 
       return newState;
-    });
-  };
-
-  const genderOnChange = ($event: any) => {
-    console.log($event);
-
-    setFormControls((state) => {
-      const gender = $event.target.value;
-
-      return { ...state, gender };
     });
   };
 
@@ -347,7 +370,7 @@ const Home = () => {
               id="input__search"
               name="search"
               autoComplete="off"
-              value={formControls.searchValue}
+              value={searchValue}
               placeholder="Search by name"
               onChange={searchValueOnChange}
             />
@@ -456,7 +479,9 @@ const Home = () => {
       {renderModal()}
       {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
       {state.showErrorMessage && (
-        <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
+        <div className="error-message">
+          🥶 ...Something goes wrong with loading data... 🥶{" "}
+        </div>
       )}
     </div>
   );
