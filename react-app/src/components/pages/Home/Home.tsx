@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormControlContext, FormControlContext_I } from "App";
+import { GlobalStateContext, GlobalStateContext_I } from "App";
 import { EntityStatus_E } from "common/enums/entity-status.enum";
 import { Gender_E } from "common/enums/gender.enum";
 import { Species_E } from "common/enums/species.enum";
@@ -8,42 +8,42 @@ import {
   ApiInfo_I,
   ApiResult_I,
 } from "common/interfaces/api.interface";
-import { HomeForm_I } from "common/interfaces/home-form.interface";
-import CardDetails from "components/CardDetails/CardDetails";
+import { GlobalState } from "common/interfaces/global-state.interface";
 import Cards from "components/Cards/Cards";
-import Modal from "components/Modal/Modal";
 import Spinner from "components/Spinner/Spinner";
 import React, { useContext, useEffect, useState } from "react";
 import { Actions_E } from "state/actions";
 import "./Home.css";
 
 export interface HomeState {
-  currentPage: number;
   cards: ApiResult_I[];
-  info: ApiInfo_I;
   showModal: boolean;
   selectedCard: ApiResult_I;
   dataIsLoading: boolean;
   showErrorMessage: boolean;
+  info: ApiInfo_I;
 }
 
 const Home = () => {
   const apiDomain = "https://rickandmortyapi.com/api";
 
-  const init = async (): Promise<void> => {
+  const init = async (shouldBeFirst?: boolean): Promise<void> => {
     setState((state) => ({
       ...state,
       dataIsLoading: true,
     }));
 
-    const data = await getData(searchValue, formControls, 1);
+    const page = shouldBeFirst ? 1 : globalState.currentPage;
+
+    const data = await getData(searchValue, globalState, page);
+
+    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: page });
 
     setState((state) => {
       const newState: HomeState = {
         ...state,
         cards: data.results,
         info: data.info,
-        currentPage: 1,
         dataIsLoading: false,
       };
 
@@ -65,21 +65,26 @@ const Home = () => {
       pages: null,
       prev: null,
     },
-    currentPage: 0,
     showModal: false,
     selectedCard: null,
     dataIsLoading: false,
     showErrorMessage: false,
   });
 
-  const { formControlState: formControls, dispatch } =
-    useContext<FormControlContext_I>(FormControlContext);
+  const { globalState, dispatch } =
+    useContext<GlobalStateContext_I>(GlobalStateContext);
+
+  useEffect(() => {
+    console.log("use effect for Home -> mount and formControls changes");
+    init(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalState.gender, globalState.species, globalState.status]);
 
   useEffect(() => {
     console.log("use effect for Home -> mount and formControls changes");
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formControls.gender, formControls.species, formControls.status]);
+  }, []);
 
   useEffect(() => {
     console.log("Search has changed");
@@ -91,7 +96,7 @@ const Home = () => {
 
   const getData = async (
     searchValue: string,
-    formControls: HomeForm_I,
+    globalState: GlobalState,
     pageNumber?: number
   ): Promise<ApiData_I> => {
     const url = new URL(`${apiDomain}/character`);
@@ -100,16 +105,16 @@ const Home = () => {
       url.searchParams.append("name", searchValue);
     }
 
-    if (formControls.status && formControls.status !== EntityStatus_E.ALL) {
-      url.searchParams.append("status", formControls.status);
+    if (globalState.status && globalState.status !== EntityStatus_E.ALL) {
+      url.searchParams.append("status", globalState.status);
     }
 
-    if (formControls.gender && formControls.gender !== Gender_E.NONE) {
-      url.searchParams.append("gender", formControls.gender);
+    if (globalState.gender && globalState.gender !== Gender_E.NONE) {
+      url.searchParams.append("gender", globalState.gender);
     }
 
-    if (formControls.species && formControls.species !== Species_E.ALL) {
-      url.searchParams.append("species", formControls.species);
+    if (globalState.species && globalState.species !== Species_E.ALL) {
+      url.searchParams.append("species", globalState.species);
     }
 
     if (pageNumber) {
@@ -151,12 +156,12 @@ const Home = () => {
       dataIsLoading: true,
     }));
 
-    const data = await getData(searchValue, formControls, 1);
+    const data = await getData(searchValue, globalState, 1);
+    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: 1 });
 
     setState((state) => {
       const newState: HomeState = {
         ...state,
-        currentPage: 1,
         cards: data.results,
         info: data.info,
         dataIsLoading: false,
@@ -177,7 +182,7 @@ const Home = () => {
     }
 
     const navigationText = target.textContent;
-    let currentPage: number = state.currentPage;
+    let currentPage: number = globalState.currentPage;
 
     if (
       (navigationText === "👈" && currentPage === 1) ||
@@ -199,12 +204,12 @@ const Home = () => {
       dataIsLoading: true,
     }));
 
-    const data = await getData(searchValue, formControls, currentPage);
+    const data = await getData(searchValue, globalState, currentPage);
 
+    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: currentPage });
     setState((state) => {
       const newState: HomeState = {
         ...state,
-        currentPage,
         cards: data.results,
         info: data.info,
         dataIsLoading: false,
@@ -214,11 +219,7 @@ const Home = () => {
     });
   };
 
-  const openModal = (card: ApiResult_I) => {
-    if (state.showModal) {
-      return;
-    }
-
+  const navigateToCharacter = (card: ApiResult_I) => {
     setState((state) => {
       const newState: HomeState = {
         ...state,
@@ -252,18 +253,6 @@ const Home = () => {
     });
   };
 
-  const renderModal = (): React.ReactNode => {
-    if (!state.showModal) {
-      return;
-    }
-
-    return (
-      <Modal>
-        <CardDetails element={state.selectedCard}></CardDetails>
-      </Modal>
-    );
-  };
-
   const renderOptionsForPaginator = () => {
     const emptyArray = [...Array(state.info.pages).keys()];
 
@@ -288,7 +277,7 @@ const Home = () => {
         <div className="paginator" onClick={onNumberPageClick}>
           <div className="left">👈</div>
           <div>
-            {state.currentPage} of {state.info.pages}
+            {globalState.currentPage} of {state.info.pages}
           </div>
           <div className="right">👉</div>
         </div>
@@ -297,7 +286,7 @@ const Home = () => {
             <label htmlFor="status">Choose a page 👇:</label>
             <select
               onChange={currentPageOnChange}
-              value={state.currentPage}
+              value={globalState.currentPage}
               name="species"
               id="species"
             >
@@ -339,12 +328,16 @@ const Home = () => {
       return { ...state, dataIsLoading: true };
     });
 
-    const data = await getData(searchValue, formControls, $event.target.value);
+    const data = await getData(searchValue, globalState, $event.target.value);
+
+    dispatch({
+      type: Actions_E.CHANGE_CURRENT_PAGE_VALUE,
+      value: $event.target.value,
+    });
 
     setState((state) => {
       const newState: HomeState = {
         ...state,
-        currentPage: $event.target.value,
         cards: data.results,
         info: data.info,
         dataIsLoading: false,
@@ -383,7 +376,7 @@ const Home = () => {
               <label htmlFor="status">Choose a status:</label>
               <select
                 onChange={statusOnChange}
-                value={formControls.status}
+                value={globalState.status}
                 name="status"
                 id="status"
               >
@@ -398,7 +391,7 @@ const Home = () => {
               <label htmlFor="status">Choose a status:</label>
               <select
                 onChange={speciesOnChange}
-                value={formControls.species}
+                value={globalState.species}
                 name="species"
                 id="species"
               >
@@ -417,7 +410,7 @@ const Home = () => {
               <label>
                 <input
                   onChange={genderOnChange}
-                  checked={formControls.gender === Gender_E.NONE}
+                  checked={globalState.gender === Gender_E.NONE}
                   value={Gender_E.NONE}
                   name="gender"
                   type="radio"
@@ -427,7 +420,7 @@ const Home = () => {
               <label>
                 <input
                   onChange={genderOnChange}
-                  checked={formControls.gender === Gender_E.MALE}
+                  checked={globalState.gender === Gender_E.MALE}
                   value={Gender_E.MALE}
                   name="gender"
                   type="radio"
@@ -437,7 +430,7 @@ const Home = () => {
               <label>
                 <input
                   onChange={genderOnChange}
-                  checked={formControls.gender === Gender_E.FEMALE}
+                  checked={globalState.gender === Gender_E.FEMALE}
                   value={Gender_E.FEMALE}
                   name="gender"
                   type="radio"
@@ -447,7 +440,7 @@ const Home = () => {
               <label>
                 <input
                   onChange={genderOnChange}
-                  checked={formControls.gender === Gender_E.GENDERLESS}
+                  checked={globalState.gender === Gender_E.GENDERLESS}
                   value={Gender_E.GENDERLESS}
                   name="gender"
                   type="radio"
@@ -457,7 +450,7 @@ const Home = () => {
               <label>
                 <input
                   onChange={genderOnChange}
-                  checked={formControls.gender === Gender_E.UNKNOWN}
+                  checked={globalState.gender === Gender_E.UNKNOWN}
                   value={Gender_E.UNKNOWN}
                   name="gender"
                   type="radio"
@@ -467,7 +460,7 @@ const Home = () => {
             </fieldset>
           </form>
         </div>
-        <Cards dataArr={state.cards} onCardClick={(card) => openModal(card)} />
+        <Cards dataArr={state.cards} onCardClick={navigateToCharacter} />
         {renderPaginator()}
       </div>
     );
@@ -476,7 +469,6 @@ const Home = () => {
   return (
     <div onClick={handleGlobalClick} className="content">
       {renderContent()}
-      {renderModal()}
       {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
       {state.showErrorMessage && (
         <div className="error-message">
