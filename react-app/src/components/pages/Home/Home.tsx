@@ -1,19 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { GlobalStateContext, GlobalStateContext_I } from "App";
-import { EntityStatus_E } from "common/enums/entity-status.enum";
-import { Gender_E } from "common/enums/gender.enum";
-import { Species_E } from "common/enums/species.enum";
-import {
-  ApiData_I,
-  ApiInfo_I,
-  ApiResult_I,
-} from "common/interfaces/api.interface";
-import { GlobalState } from "common/interfaces/global-state.interface";
-import Cards from "components/Cards/Cards";
-import Spinner from "components/Spinner/Spinner";
-import React, { useContext, useEffect, useState } from "react";
-import { Actions_E } from "state/actions";
-import "./Home.css";
+import { GlobalStateContext, GlobalStateContext_I } from 'App';
+import { EntityStatus_E } from 'common/enums/entity-status.enum';
+import { Gender_E } from 'common/enums/gender.enum';
+import { Species_E } from 'common/enums/species.enum';
+import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interface';
+import { GlobalState } from 'common/interfaces/global-state.interface';
+import Cards from 'components/Cards/Cards';
+import Spinner from 'components/Spinner/Spinner';
+import React, { useContext, useEffect, useState } from 'react';
+import { Actions_E } from 'state/actions';
+import './Home.css';
 
 export interface HomeState {
   cards: ApiResult_I[];
@@ -25,7 +21,7 @@ export interface HomeState {
 }
 
 const Home = () => {
-  const apiDomain = "https://rickandmortyapi.com/api";
+  const apiDomain = 'https://rickandmortyapi.com/api';
 
   const init = async (shouldBeFirst?: boolean): Promise<void> => {
     setState((state) => ({
@@ -52,9 +48,7 @@ const Home = () => {
   };
 
   const [searchValue, setSearchValue] = useState(
-    !!window.localStorage.getItem("value")
-      ? window.localStorage.getItem("value")
-      : ""
+    !!window.localStorage.getItem('value') ? window.localStorage.getItem('value') : ''
   );
 
   const [state, setState] = useState({
@@ -71,26 +65,25 @@ const Home = () => {
     showErrorMessage: false,
   });
 
-  const { globalState, dispatch } =
-    useContext<GlobalStateContext_I>(GlobalStateContext);
+  const { globalState, dispatch } = useContext<GlobalStateContext_I>(GlobalStateContext);
 
   useEffect(() => {
-    console.log("use effect for Home -> mount and formControls changes");
+    console.log('use effect for Home -> mount and formControls changes');
     init(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalState.gender, globalState.species, globalState.status]);
 
   useEffect(() => {
-    console.log("use effect for Home -> mount and formControls changes");
+    console.log('use effect for Home -> mount and formControls changes');
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    console.log("Search has changed");
+    console.log('Search has changed');
 
     return () => {
-      window.localStorage.setItem("value", searchValue);
+      window.localStorage.setItem('value', searchValue);
     };
   }, [searchValue]);
 
@@ -102,27 +95,27 @@ const Home = () => {
     const url = new URL(`${apiDomain}/character`);
 
     if (searchValue) {
-      url.searchParams.append("name", searchValue);
+      url.searchParams.append('name', searchValue);
     }
 
     if (globalState.status && globalState.status !== EntityStatus_E.ALL) {
-      url.searchParams.append("status", globalState.status);
+      url.searchParams.append('status', globalState.status);
     }
 
     if (globalState.gender && globalState.gender !== Gender_E.NONE) {
-      url.searchParams.append("gender", globalState.gender);
+      url.searchParams.append('gender', globalState.gender);
     }
 
     if (globalState.species && globalState.species !== Species_E.ALL) {
-      url.searchParams.append("species", globalState.species);
+      url.searchParams.append('species', globalState.species);
     }
 
     if (pageNumber) {
-      url.searchParams.append("page", String(pageNumber));
+      url.searchParams.append('page', String(pageNumber));
     }
 
     try {
-      const response = await fetch(url, { method: "GET" });
+      const response = await fetch(url, { method: 'GET' });
 
       if (response.status === 404) {
         return {
@@ -135,20 +128,15 @@ const Home = () => {
       return apiData;
     } catch (err) {
       setState((state) => ({ ...state, showErrorMessage: true }));
-      setTimeout(
-        () => setState((state) => ({ ...state, showErrorMessage: false })),
-        3000
-      );
-      throw new Error("Could not get data from API");
+      setTimeout(() => setState((state) => ({ ...state, showErrorMessage: false })), 3000);
+      throw new Error('Could not get data from API');
     }
   };
 
   /**
    * INFO: получаем данные из API при submit
    */
-  const submitForm = async (
-    event: React.ChangeEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const submitForm = async (event: React.ChangeEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
     setState((state) => ({
@@ -171,13 +159,11 @@ const Home = () => {
     });
   };
 
-  const onNumberPageClick = async (
-    event: React.MouseEvent<HTMLDivElement>
-  ): Promise<void> => {
+  const onNumberPageClick = async (event: React.MouseEvent<HTMLDivElement>): Promise<void> => {
     const target = event.target as HTMLDivElement;
     event.preventDefault();
 
-    if (target.className.includes("paginator")) {
+    if (target.className.includes('paginator')) {
       return;
     }
 
@@ -185,17 +171,17 @@ const Home = () => {
     let currentPage: number = globalState.currentPage;
 
     if (
-      (navigationText === "👈" && currentPage === 1) ||
-      (navigationText === "👉" && currentPage >= state.info.pages)
+      (navigationText === '👈' && currentPage === 1) ||
+      (navigationText === '👉' && currentPage >= state.info.pages)
     ) {
       return;
     }
 
-    if (navigationText === "👈") {
+    if (navigationText === '👈') {
       currentPage -= 1;
     }
 
-    if (navigationText === "👉") {
+    if (navigationText === '👉') {
       currentPage += 1;
     }
 
@@ -238,7 +224,7 @@ const Home = () => {
 
     const target = event.target as HTMLElement;
 
-    if (target.closest(".card-details") && target.className !== "cross") {
+    if (target.closest('.card-details') && target.className !== 'cross') {
       return;
     }
 
@@ -471,9 +457,7 @@ const Home = () => {
       {renderContent()}
       {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
       {state.showErrorMessage && (
-        <div className="error-message">
-          🥶 ...Something goes wrong with loading data... 🥶{" "}
-        </div>
+        <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
       )}
     </div>
   );

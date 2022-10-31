@@ -1,7 +1,7 @@
-import { EntityStatus_E } from "common/enums/entity-status.enum";
-import { Gender_E } from "common/enums/gender.enum";
-import { Species_E } from "common/enums/species.enum";
-import { ApiResult_I } from "./api.interface";
+import { EntityStatus_E } from 'common/enums/entity-status.enum';
+import { Gender_E } from 'common/enums/gender.enum';
+import { Species_E } from 'common/enums/species.enum';
+import { ApiResult_I } from './api.interface';
 
 export interface GlobalState {
   // sorting
