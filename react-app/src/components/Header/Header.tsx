@@ -1,6 +1,6 @@
-import React from "react";
-import "./Header.css";
-import { NavLink, useLocation } from "react-router-dom";
+import React from 'react';
+import './Header.css';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const Header = function () {
   const location = useLocation();

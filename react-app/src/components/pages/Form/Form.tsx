@@ -1,17 +1,11 @@
-import { FormCard_I } from "../../../common/interfaces/own-card.interface";
-import FormCardList from "../../FormCardList/FormCardList";
+import { FormCard_I } from '../../../common/interfaces/own-card.interface';
+import FormCardList from '../../FormCardList/FormCardList';
 
-import RequiredErrorMessage from "../../../components/RequiredErrorMessage/RequiredErrorMessage";
-import React, { FormEvent, useRef, useState } from "react";
-import "./Form.css";
+import RequiredErrorMessage from '../../../components/RequiredErrorMessage/RequiredErrorMessage';
+import React, { FormEvent, useRef, useState } from 'react';
+import './Form.css';
 
-type formFieldType =
-  | "name"
-  | "createdDate"
-  | "speciesGroup"
-  | "status"
-  | "file"
-  | "genderGroup";
+type formFieldType = 'name' | 'createdDate' | 'speciesGroup' | 'status' | 'file' | 'genderGroup';
 
 type genericControlType = Control_I<string | File | SelectOption_I>;
 
@@ -68,7 +62,7 @@ const Form = () => {
       return false;
     }
 
-    if (typeof value === "object") {
+    if (typeof value === 'object') {
       const arrayOfValues = Object.values(controls.value);
 
       return !arrayOfValues.some((e: SelectOption_I) => e.checked);
@@ -80,76 +74,72 @@ const Form = () => {
   // INFO: in validators array you can add any validator as you wish :)
   const formControls = {
     name: {
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        onInputChange("name", event.target),
-      validators: [{ type: "required", validator: requiredValidatorError }],
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => onInputChange('name', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     createdDate: {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        onInputChange("createdDate", event.target),
-      validators: [{ type: "required", validator: requiredValidatorError }],
+        onInputChange('createdDate', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     speciesGroup: {
       horrid: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          onSpeciesGroupInputChange("horrid", event.target),
+          onSpeciesGroupInputChange('horrid', event.target),
       },
       lovely: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          onSpeciesGroupInputChange("lovely", event.target),
+          onSpeciesGroupInputChange('lovely', event.target),
       },
       unusual: {
         onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          onSpeciesGroupInputChange("unusual", event.target),
+          onSpeciesGroupInputChange('unusual', event.target),
       },
-      validators: [{ type: "required", validator: requiredValidatorError }],
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     status: {
       onChange: (event: React.ChangeEvent<HTMLSelectElement>) =>
-        onInputChange("status", event.target),
-      validators: [{ type: "required", validator: requiredValidatorError }],
+        onInputChange('status', event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     genderGroup: {
       male: {
-        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          onGenderGroupChange(event.target),
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => onGenderGroupChange(event.target),
       },
       female: {
-        onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-          onGenderGroupChange(event.target),
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => onGenderGroupChange(event.target),
       },
-      validators: [{ type: "required", validator: requiredValidatorError }],
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
     file: {
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        onFileChange(event.target),
-      validators: [{ type: "required", validator: requiredValidatorError }],
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => onFileChange(event.target),
+      validators: [{ type: 'required', validator: requiredValidatorError }],
     },
   };
 
   const cleanForm: Form_I = {
     name: {
-      value: "",
+      value: '',
       isInvalid: null,
       error: {},
     },
     createdDate: {
-      value: "",
+      value: '',
       isInvalid: null,
       error: {},
     },
     speciesGroup: {
       value: {
         horrid: {
-          value: "Horrid",
+          value: 'Horrid',
           checked: false,
         },
         lovely: {
-          value: "Lovely",
+          value: 'Lovely',
           checked: false,
         },
         unusual: {
-          value: "Unusual",
+          value: 'Unusual',
           checked: false,
         },
       },
@@ -157,18 +147,18 @@ const Form = () => {
       error: {},
     },
     status: {
-      value: "unknown",
+      value: 'unknown',
       isInvalid: null,
       error: {},
     },
     genderGroup: {
       value: {
         male: {
-          value: "Male",
+          value: 'Male',
           checked: false,
         },
         female: {
-          value: "Female",
+          value: 'Female',
           checked: false,
         },
       },
@@ -214,10 +204,7 @@ const Form = () => {
     });
   };
 
-  const onInputChange = (
-    key: string,
-    target: HTMLInputElement | HTMLSelectElement
-  ): void => {
+  const onInputChange = (key: string, target: HTMLInputElement | HTMLSelectElement): void => {
     const value = target.value;
 
     setState((state: FormState) => {
@@ -242,7 +229,7 @@ const Form = () => {
   };
 
   const onSpeciesGroupInputChange = (
-    key: "horrid" | "lovely" | "unusual",
+    key: 'horrid' | 'lovely' | 'unusual',
     target: HTMLInputElement
   ) => {
     const value = target.value;
@@ -278,7 +265,7 @@ const Form = () => {
     setState((state: FormState) => {
       let valueGender;
 
-      if (value === "Male") {
+      if (value === 'Male') {
         valueGender = {
           male: {
             value,
@@ -357,11 +344,9 @@ const Form = () => {
 
     const { form } = state;
 
-    Object.entries(form).forEach(
-      ([key, control]: [string, genericControlType]) => {
-        validate(control, key as formFieldType);
-      }
-    );
+    Object.entries(form).forEach(([key, control]: [string, genericControlType]) => {
+      validate(control, key as formFieldType);
+    });
   };
 
   const onSubmitEmitted = (event: FormEvent): void => {
@@ -369,7 +354,7 @@ const Form = () => {
     event.preventDefault();
 
     setState((state) => {
-      console.log("state after submit", state);
+      console.log('state after submit', state);
 
       if (!state.isValidateForm) {
         return state;
@@ -415,8 +400,7 @@ const Form = () => {
     setState((state) => ({ ...state, isVirginForm: false }));
   };
 
-  const { name, createdDate, speciesGroup, status, genderGroup, file } =
-    state.form;
+  const { name, createdDate, speciesGroup, status, genderGroup, file } = state.form;
   const { horrid, lovely, unusual } = speciesGroup.value;
   const { male, female } = genderGroup.value;
 
@@ -549,10 +533,7 @@ const Form = () => {
                 accept="image/*"
               />
               <br />
-              <img
-                className="img-file"
-                src={file.value && URL.createObjectURL(file.value)}
-              ></img>
+              <img className="img-file" src={file.value && URL.createObjectURL(file.value)}></img>
             </div>
             <RequiredErrorMessage isError={file.error.required} />
           </section>
@@ -573,9 +554,7 @@ const Form = () => {
         </div>
       </div>
       {/* INFO: Сообщение если карта создана */}
-      {state.showSuccessMessage && (
-        <div className="success-message">Card was created</div>
-      )}
+      {state.showSuccessMessage && <div className="success-message">Card was created</div>}
     </>
   );
 };

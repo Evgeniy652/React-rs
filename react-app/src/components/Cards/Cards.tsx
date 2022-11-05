@@ -1,7 +1,7 @@
-import { ApiResult_I } from "common/interfaces/api.interface";
-import Card from "../Card/Card";
-import React from "react";
-import "./Cards.css";
+import { ApiResult_I } from 'common/interfaces/api.interface';
+import Card from '../Card/Card';
+import React from 'react';
+import './Cards.css';
 
 export interface CardsProps {
   dataArr: ApiResult_I[];

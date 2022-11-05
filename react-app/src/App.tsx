@@ -1,21 +1,21 @@
-import React from "react";
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import React from 'react';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import "./App.css";
+import './App.css';
 
-import Header from "./components/Header/Header";
-import Footer from "./components/Footer/Footer";
-import About from "./components/pages/About/About";
-import Page404 from "./components/pages/Page404/Page404";
-import Home from "./components/pages/Home/Home";
-import Form from "./components/pages/Form/Form";
-import HomeLayout from "components/pages/HomeLayout/HomeLayout";
-import Character from "components/pages/Character/Character";
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import About from './components/pages/About/About';
+import Page404 from './components/pages/Page404/Page404';
+import Home from './components/pages/Home/Home';
+import Form from './components/pages/Form/Form';
+import HomeLayout from 'components/pages/HomeLayout/HomeLayout';
+import Character from 'components/pages/Character/Character';
 
-import { GlobalStateContext_I } from "common/interfaces/global-state.interface";
+import { GlobalStateContext_I } from 'common/interfaces/global-state.interface';
 
-import { initGlobalState } from "state/actions";
-import { reducer } from "state/reducer";
+import { initGlobalState } from 'state/actions';
+import { reducer } from 'state/reducer';
 
 export const GlobalStateContext = React.createContext(null);
 

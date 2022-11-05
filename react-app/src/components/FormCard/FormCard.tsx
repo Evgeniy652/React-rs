@@ -1,6 +1,6 @@
-import { FormCard_I } from "common/interfaces/own-card.interface";
-import React from "react";
-import "./FormCard.css";
+import { FormCard_I } from 'common/interfaces/own-card.interface';
+import React from 'react';
+import './FormCard.css';
 
 export interface FormCardProps {
   element: FormCard_I;
@@ -27,7 +27,7 @@ class FormCard extends React.Component<FormCardProps> {
           Status: <strong>{el.status}</strong>
         </p>
         <p className="card-species">
-          Species: <strong>{el.species.join(" ")}</strong>
+          Species: <strong>{el.species.join(' ')}</strong>
         </p>
         <p className="card-gender">
           Gender: <strong>{el.gender}</strong>

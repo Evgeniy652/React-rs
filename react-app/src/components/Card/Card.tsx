@@ -1,6 +1,6 @@
-import { ApiResult_I } from "common/interfaces/api.interface";
-import React from "react";
-import "./Card.css";
+import { ApiResult_I } from 'common/interfaces/api.interface';
+import React from 'react';
+import './Card.css';
 
 export interface CardProps {
   element: ApiResult_I;

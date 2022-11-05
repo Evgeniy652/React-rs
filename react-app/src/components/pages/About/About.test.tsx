@@ -1,14 +1,14 @@
-import { render, cleanup } from "@testing-library/react";
-import "../../../setupTests";
-import pretty from "pretty";
+import { render, cleanup } from '@testing-library/react';
+import '../../../setupTests';
+import pretty from 'pretty';
 
-import React from "react";
-import { About } from "./About";
+import React from 'react';
+import { About } from './About';
 
-describe("About component", () => {
+describe('About component', () => {
   beforeEach(cleanup);
 
-  test("should render about", () => {
+  test('should render about', () => {
     const { container } = render(<About />);
     expect(pretty(container.innerHTML)).toMatchInlineSnapshot(`
       "<div class=\\"about\\">

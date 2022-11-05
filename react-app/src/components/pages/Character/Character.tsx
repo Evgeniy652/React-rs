@@ -1,9 +1,9 @@
-import { GlobalStateContext } from "App";
-import { GlobalStateContext_I } from "common/interfaces/global-state.interface";
-import CardDetails from "components/CardDetails/CardDetails";
-import React, { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Character.css";
+import { GlobalStateContext } from 'App';
+import { GlobalStateContext_I } from 'common/interfaces/global-state.interface';
+import CardDetails from 'components/CardDetails/CardDetails';
+import React, { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Character.css';
 
 const Character = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Character = () => {
 
   useEffect(() => {
     if (!character) {
-      navigate("/home");
+      navigate('/home');
       return;
     }
   }, [character, navigate]);

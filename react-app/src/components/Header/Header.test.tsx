@@ -1,15 +1,15 @@
-import { render, cleanup } from "@testing-library/react";
-import "../../setupTests";
-import pretty from "pretty";
+import { render, cleanup } from '@testing-library/react';
+import '../../setupTests';
+import pretty from 'pretty';
 
-import React from "react";
-import Header from "./Header";
-import { MemoryRouter } from "react-router-dom";
+import React from 'react';
+import Header from './Header';
+import { MemoryRouter } from 'react-router-dom';
 
-describe("Header component", () => {
+describe('Header component', () => {
   beforeEach(cleanup);
 
-  test("should render header", () => {
+  test('should render header', () => {
     const { container } = render(
       <MemoryRouter>
         <Header />
