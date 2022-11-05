@@ -1,29 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { GlobalStateContext, GlobalStateContext_I } from 'App';
-import { EntityStatus_E } from 'common/enums/entity-status.enum';
-import { Gender_E } from 'common/enums/gender.enum';
-import { Species_E } from 'common/enums/species.enum';
-import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interface';
-import { GlobalState } from 'common/interfaces/global-state.interface';
-import Cards from 'components/Cards/Cards';
-import Spinner from 'components/Spinner/Spinner';
-import React, { useContext, useEffect, useState } from 'react';
-import { Actions_E } from 'state/actions';
-import './Home.css';
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { GlobalStateContext } from "App";
+import { EntityStatus_E } from "common/enums/entity-status.enum";
+import { Gender_E } from "common/enums/gender.enum";
+import { Species_E } from "common/enums/species.enum";
+import {
+  ApiData_I,
+  ApiInfo_I,
+  ApiResult_I,
+} from "common/interfaces/api.interface";
+import { Actions_E } from "common/enums/actions.enum";
+import {
+  GlobalStateContext_I,
+  GlobalState_I,
+} from "common/interfaces/global-state.interface";
+import Cards from "components/Cards/Cards";
+import Spinner from "components/Spinner/Spinner";
+import "./Home.css";
 
 export interface HomeState {
   cards: ApiResult_I[];
   showModal: boolean;
-  selectedCard: ApiResult_I;
   dataIsLoading: boolean;
   showErrorMessage: boolean;
   info: ApiInfo_I;
 }
 
 const Home = () => {
-  const apiDomain = 'https://rickandmortyapi.com/api';
+  const apiDomain = "https://rickandmortyapi.com/api";
+  const navigate = useNavigate();
 
-  const init = async (shouldBeFirst?: boolean): Promise<void> => {
+  const rerenderData = async (shouldBeFirst?: boolean): Promise<void> => {
     setState((state) => ({
       ...state,
       dataIsLoading: true,
@@ -48,11 +57,13 @@ const Home = () => {
   };
 
   const [searchValue, setSearchValue] = useState(
-    !!window.localStorage.getItem('value') ? window.localStorage.getItem('value') : ''
+    !!window.localStorage.getItem("value")
+      ? window.localStorage.getItem("value")
+      : ""
   );
 
   const [state, setState] = useState({
-    cards: [],
+    cards: null,
     info: {
       count: null,
       next: null,
@@ -60,62 +71,60 @@ const Home = () => {
       prev: null,
     },
     showModal: false,
-    selectedCard: null,
     dataIsLoading: false,
     showErrorMessage: false,
   });
 
-  const { globalState, dispatch } = useContext<GlobalStateContext_I>(GlobalStateContext);
+  const { globalState, dispatch } =
+    useContext<GlobalStateContext_I>(GlobalStateContext);
 
   useEffect(() => {
-    console.log('use effect for Home -> mount and formControls changes');
-    init(true);
+    console.log("use effect for Home -> mount and formControls changes");
+    if (state.cards === null) {
+      rerenderData();
+    } else {
+      rerenderData(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalState.gender, globalState.species, globalState.status]);
 
   useEffect(() => {
-    console.log('use effect for Home -> mount and formControls changes');
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    console.log('Search has changed');
+    console.log("Search has changed");
 
     return () => {
-      window.localStorage.setItem('value', searchValue);
+      window.localStorage.setItem("value", searchValue);
     };
   }, [searchValue]);
 
   const getData = async (
     searchValue: string,
-    globalState: GlobalState,
+    globalState: GlobalState_I,
     pageNumber?: number
   ): Promise<ApiData_I> => {
     const url = new URL(`${apiDomain}/character`);
 
     if (searchValue) {
-      url.searchParams.append('name', searchValue);
+      url.searchParams.append("name", searchValue);
     }
 
     if (globalState.status && globalState.status !== EntityStatus_E.ALL) {
-      url.searchParams.append('status', globalState.status);
+      url.searchParams.append("status", globalState.status);
     }
 
     if (globalState.gender && globalState.gender !== Gender_E.NONE) {
-      url.searchParams.append('gender', globalState.gender);
+      url.searchParams.append("gender", globalState.gender);
     }
 
     if (globalState.species && globalState.species !== Species_E.ALL) {
-      url.searchParams.append('species', globalState.species);
+      url.searchParams.append("species", globalState.species);
     }
 
     if (pageNumber) {
-      url.searchParams.append('page', String(pageNumber));
+      url.searchParams.append("page", String(pageNumber));
     }
 
     try {
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetch(url, { method: "GET" });
 
       if (response.status === 404) {
         return {
@@ -128,15 +137,20 @@ const Home = () => {
       return apiData;
     } catch (err) {
       setState((state) => ({ ...state, showErrorMessage: true }));
-      setTimeout(() => setState((state) => ({ ...state, showErrorMessage: false })), 3000);
-      throw new Error('Could not get data from API');
+      setTimeout(
+        () => setState((state) => ({ ...state, showErrorMessage: false })),
+        3000
+      );
+      throw new Error("Could not get data from API");
     }
   };
 
   /**
    * INFO: получаем данные из API при submit
    */
-  const submitForm = async (event: React.ChangeEvent<HTMLFormElement>): Promise<void> => {
+  const submitForm = async (
+    event: React.ChangeEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
 
     setState((state) => ({
@@ -159,11 +173,13 @@ const Home = () => {
     });
   };
 
-  const onNumberPageClick = async (event: React.MouseEvent<HTMLDivElement>): Promise<void> => {
+  const onNumberPageClick = async (
+    event: React.MouseEvent<HTMLDivElement>
+  ): Promise<void> => {
     const target = event.target as HTMLDivElement;
     event.preventDefault();
 
-    if (target.className.includes('paginator')) {
+    if (target.className.includes("paginator")) {
       return;
     }
 
@@ -171,17 +187,17 @@ const Home = () => {
     let currentPage: number = globalState.currentPage;
 
     if (
-      (navigationText === '👈' && currentPage === 1) ||
-      (navigationText === '👉' && currentPage >= state.info.pages)
+      (navigationText === "👈" && currentPage === 1) ||
+      (navigationText === "👉" && currentPage >= state.info.pages)
     ) {
       return;
     }
 
-    if (navigationText === '👈') {
+    if (navigationText === "👈") {
       currentPage -= 1;
     }
 
-    if (navigationText === '👉') {
+    if (navigationText === "👉") {
       currentPage += 1;
     }
 
@@ -206,15 +222,9 @@ const Home = () => {
   };
 
   const navigateToCharacter = (card: ApiResult_I) => {
-    setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        showModal: true,
-        selectedCard: card,
-      };
+    dispatch({ type: Actions_E.SELECT_CHARACTER, value: card });
 
-      return newState;
-    });
+    navigate(`./${card.id}`);
   };
 
   const handleGlobalClick = (event: React.MouseEvent<HTMLElement>): void => {
@@ -224,19 +234,9 @@ const Home = () => {
 
     const target = event.target as HTMLElement;
 
-    if (target.closest('.card-details') && target.className !== 'cross') {
+    if (target.closest(".card-details") && target.className !== "cross") {
       return;
     }
-
-    setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        showModal: false,
-        selectedCard: null,
-      };
-
-      return newState;
-    });
   };
 
   const renderOptionsForPaginator = () => {
@@ -254,7 +254,7 @@ const Home = () => {
   };
 
   const renderPaginator = (): React.ReactNode => {
-    if (!state.cards.length) {
+    if (!state.cards || !state.cards.length) {
       return;
     }
 
@@ -457,7 +457,9 @@ const Home = () => {
       {renderContent()}
       {/* INFO: Сообщение если что-то пошло не так при загрузке данных */}
       {state.showErrorMessage && (
-        <div className="error-message">🥶 ...Something goes wrong with loading data... 🥶 </div>
+        <div className="error-message">
+          🥶 ...Something goes wrong with loading data... 🥶{" "}
+        </div>
       )}
     </div>
   );

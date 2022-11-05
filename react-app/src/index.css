@@ -2,7 +2,9 @@ body {
   margin: 0;
 }
 
+
 #modal-root {
   position: relative;
   z-index: 999;
 }
+  

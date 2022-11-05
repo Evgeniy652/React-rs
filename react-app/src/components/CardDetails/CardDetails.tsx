@@ -1,6 +1,6 @@
-import { ApiResult_I } from 'common/interfaces/api.interface';
-import React from 'react';
-import './CardDetails.css';
+import { ApiResult_I } from "common/interfaces/api.interface";
+import React from "react";
+import "./CardDetails.css";
 
 export interface CardDetailsProps {
   element: ApiResult_I;
@@ -16,7 +16,7 @@ class CardDetails extends React.Component<CardDetailsProps> {
     const { element: el, role } = this.props;
 
     return (
-      <div className="modal-card-details">
+      <div>
         <div role={role} className="card-details" key={el.id}>
           <div className="cross">❌</div>
           <div className="card-img">

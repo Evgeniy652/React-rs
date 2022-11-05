@@ -1,7 +1,7 @@
-import { ApiResult_I } from 'common/interfaces/api.interface';
-import Card from '../Card/Card';
-import React from 'react';
-import './Cards.css';
+import { ApiResult_I } from "common/interfaces/api.interface";
+import Card from "../Card/Card";
+import React from "react";
+import "./Cards.css";
 
 export interface CardsProps {
   dataArr: ApiResult_I[];
@@ -14,6 +14,10 @@ class Cards extends React.Component<CardsProps> {
   }
 
   private createCards(): JSX.Element[] {
+    if (!this.props.dataArr) {
+      return;
+    }
+
     return this.props.dataArr.map((el: ApiResult_I) => {
       return (
         <div key={el.id} onClick={this.props.onCardClick.bind(this, el)}>
@@ -25,6 +29,10 @@ class Cards extends React.Component<CardsProps> {
 
   render(): React.ReactNode {
     const jsxCards = this.createCards();
+
+    if (!jsxCards) {
+      return;
+    }
 
     if (!jsxCards.length) {
       return <p className="text-none">No matches were found for your search</p>;

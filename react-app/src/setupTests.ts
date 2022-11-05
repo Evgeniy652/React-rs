@@ -2,10 +2,10 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
-import { mswServer } from './__mocks__/server/setup-server';
+import "@testing-library/jest-dom";
+import { mswServer } from "./__mocks__/server/setup-server";
 
-let localStorageValue = '';
+let localStorageValue = "";
 
 const localStorageMock = {
   getItem: jest.fn(() => localStorageValue),
@@ -16,7 +16,7 @@ const localStorageMock = {
   length: 0,
 };
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
@@ -24,6 +24,6 @@ export const setItemToLocalStorage = (value: string) => {
   localStorageValue = value;
 };
 
-beforeEach(() => mswServer.listen({ onUnhandledRequest: 'bypass' }));
+beforeEach(() => mswServer.listen({ onUnhandledRequest: "bypass" }));
 afterEach(() => mswServer.resetHandlers());
 afterAll(() => mswServer.close());

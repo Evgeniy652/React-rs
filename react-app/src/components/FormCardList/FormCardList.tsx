@@ -1,7 +1,7 @@
-import { FormCard_I } from 'common/interfaces/own-card.interface';
-import FormCard from 'components/FormCard/FormCard';
-import React from 'react';
-import './FormCardList.css';
+import { FormCard_I } from "common/interfaces/own-card.interface";
+import FormCard from "components/FormCard/FormCard";
+import React from "react";
+import "./FormCardList.css";
 
 export interface FormCardListProps {
   list: FormCard_I[];

@@ -1,5 +1,5 @@
-import React from 'react';
-import './RequiredErrorMessage.css';
+import React from "react";
+import "./RequiredErrorMessage.css";
 
 export interface RequiredErrorMessageProps {
   isError: boolean;
@@ -11,7 +11,9 @@ class RequiredErrorMessage extends React.Component<RequiredErrorMessageProps> {
   }
 
   render(): React.ReactNode {
-    return this.props.isError && <div className="error">This field is required</div>;
+    return (
+      this.props.isError && <div className="error">This field is required</div>
+    );
   }
 }
 
