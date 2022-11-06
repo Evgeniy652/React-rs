@@ -1,6 +1,6 @@
 import { render, cleanup, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { fetchTasks_some_cards_response } from '__mocks__/server/handlers';
 import { mswServer } from '__mocks__/server/setup-server';
 

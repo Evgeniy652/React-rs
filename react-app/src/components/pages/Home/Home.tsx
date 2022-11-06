@@ -6,42 +6,44 @@ import { GlobalStateContext } from 'App';
 import { EntityStatus_E } from 'common/enums/entity-status.enum';
 import { Gender_E } from 'common/enums/gender.enum';
 import { Species_E } from 'common/enums/species.enum';
-import { ApiData_I, ApiInfo_I, ApiResult_I } from 'common/interfaces/api.interface';
+import { ApiData_I, ApiResult_I } from 'common/interfaces/api.interface';
 import { Actions_E } from 'common/enums/actions.enum';
 import { GlobalStateContext_I, GlobalState_I } from 'common/interfaces/global-state.interface';
 import Cards from 'components/Cards/Cards';
 import Spinner from 'components/Spinner/Spinner';
 import './Home.css';
+import { GETTING_DATA_I } from 'state/reducer';
 
 export interface HomeState {
-  cards: ApiResult_I[];
   showModal: boolean;
   dataIsLoading: boolean;
   showErrorMessage: boolean;
-  info: ApiInfo_I;
 }
 
 const Home = () => {
   const apiDomain = 'https://rickandmortyapi.com/api';
   const navigate = useNavigate();
 
-  const rerenderData = async (shouldBeFirst?: boolean): Promise<void> => {
+  const rerenderData = async (currentPage: number): Promise<void> => {
     setState((state) => ({
       ...state,
       dataIsLoading: true,
     }));
 
-    const page = shouldBeFirst ? 1 : globalState.currentPage;
+    const data = await getData(searchValue, globalState, currentPage);
 
-    const data = await getData(searchValue, globalState, page);
-
-    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: page });
+    dispatch({
+      type: Actions_E.GETTING_DATA,
+      value: {
+        page: currentPage,
+        data: data.results,
+        info: data.info,
+      } as GETTING_DATA_I,
+    });
 
     setState((state) => {
       const newState: HomeState = {
         ...state,
-        cards: data.results,
-        info: data.info,
         dataIsLoading: false,
       };
 
@@ -54,13 +56,6 @@ const Home = () => {
   );
 
   const [state, setState] = useState({
-    cards: null,
-    info: {
-      count: null,
-      next: null,
-      pages: null,
-      prev: null,
-    },
     showModal: false,
     dataIsLoading: false,
     showErrorMessage: false,
@@ -70,10 +65,10 @@ const Home = () => {
 
   useEffect(() => {
     console.log('use effect for Home -> mount and formControls changes');
-    if (state.cards === null) {
-      rerenderData();
+    if (globalState.cards === null) {
+      rerenderData(1);
     } else {
-      rerenderData(true);
+      rerenderData(globalState.currentPage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalState.gender, globalState.species, globalState.status]);
@@ -118,7 +113,7 @@ const Home = () => {
 
       if (response.status === 404) {
         return {
-          info: state.info,
+          info: globalState.info,
           results: [],
         };
       }
@@ -138,24 +133,7 @@ const Home = () => {
   const submitForm = async (event: React.ChangeEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
-    setState((state) => ({
-      ...state,
-      dataIsLoading: true,
-    }));
-
-    const data = await getData(searchValue, globalState, 1);
-    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: 1 });
-
-    setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        cards: data.results,
-        info: data.info,
-        dataIsLoading: false,
-      };
-
-      return newState;
-    });
+    rerenderData(1);
   };
 
   const onNumberPageClick = async (event: React.MouseEvent<HTMLDivElement>): Promise<void> => {
@@ -171,7 +149,7 @@ const Home = () => {
 
     if (
       (navigationText === '👈' && currentPage === 1) ||
-      (navigationText === '👉' && currentPage >= state.info.pages)
+      (navigationText === '👉' && currentPage >= globalState.info.pages)
     ) {
       return;
     }
@@ -184,24 +162,7 @@ const Home = () => {
       currentPage += 1;
     }
 
-    setState((state) => ({
-      ...state,
-      dataIsLoading: true,
-    }));
-
-    const data = await getData(searchValue, globalState, currentPage);
-
-    dispatch({ type: Actions_E.CHANGE_CURRENT_PAGE_VALUE, value: currentPage });
-    setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        cards: data.results,
-        info: data.info,
-        dataIsLoading: false,
-      };
-
-      return newState;
-    });
+    rerenderData(currentPage);
   };
 
   const navigateToCharacter = (card: ApiResult_I) => {
@@ -223,7 +184,7 @@ const Home = () => {
   };
 
   const renderOptionsForPaginator = () => {
-    const emptyArray = [...Array(state.info.pages).keys()];
+    const emptyArray = [...Array(globalState.info.pages).keys()];
 
     return emptyArray.map((i) => {
       const page = i + 1;
@@ -237,7 +198,7 @@ const Home = () => {
   };
 
   const renderPaginator = (): React.ReactNode => {
-    if (!state.cards || !state.cards.length) {
+    if (!globalState.cards || !globalState.cards.length) {
       return;
     }
 
@@ -246,7 +207,7 @@ const Home = () => {
         <div className="paginator" onClick={onNumberPageClick}>
           <div className="left">👈</div>
           <div>
-            {globalState.currentPage} of {state.info.pages}
+            {globalState.currentPage} of {globalState.info.pages}
           </div>
           <div className="right">👉</div>
         </div>
@@ -292,28 +253,9 @@ const Home = () => {
     });
   };
 
-  const currentPageOnChange = async ($event: any) => {
-    setState((state) => {
-      return { ...state, dataIsLoading: true };
-    });
-
-    const data = await getData(searchValue, globalState, $event.target.value);
-
-    dispatch({
-      type: Actions_E.CHANGE_CURRENT_PAGE_VALUE,
-      value: $event.target.value,
-    });
-
-    setState((state) => {
-      const newState: HomeState = {
-        ...state,
-        cards: data.results,
-        info: data.info,
-        dataIsLoading: false,
-      };
-
-      return newState;
-    });
+  const currentPageOnChange = async ($event: React.ChangeEvent) => {
+    const value = ($event.target as HTMLSelectElement).value;
+    rerenderData(Number(value));
   };
 
   const renderContent = (): React.ReactNode => {
@@ -429,7 +371,7 @@ const Home = () => {
             </fieldset>
           </form>
         </div>
-        <Cards dataArr={state.cards} onCardClick={navigateToCharacter} />
+        <Cards dataArr={globalState.cards} onCardClick={navigateToCharacter} />
         {renderPaginator()}
       </div>
     );

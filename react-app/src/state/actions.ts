@@ -12,4 +12,12 @@ export const initGlobalState: GlobalState_I = {
   selectedCharacter: null,
 
   currentPage: 1,
+
+  cards: null,
+  info: {
+    count: null,
+    next: null,
+    pages: null,
+    prev: null,
+  },
 };

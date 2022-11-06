@@ -2,7 +2,7 @@ import { Actions_E } from 'common/enums/actions.enum';
 import { EntityStatus_E } from 'common/enums/entity-status.enum';
 import { Gender_E } from 'common/enums/gender.enum';
 import { Species_E } from 'common/enums/species.enum';
-import { ApiResult_I } from './api.interface';
+import { ApiInfo_I, ApiResult_I } from './api.interface';
 
 export interface GlobalState_I {
   // sorting
@@ -13,6 +13,8 @@ export interface GlobalState_I {
   // pagination
   currentPage: number;
 
+  cards: ApiResult_I[];
+  info: ApiInfo_I;
   // selected character
   selectedCharacter: ApiResult_I;
 }
